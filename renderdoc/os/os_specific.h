@@ -64,10 +64,17 @@ RDResult StartGlobalHook(const rdcstr &pathmatch, const rdcstr &capturefile,
 bool IsGlobalHookActive();
 void StopGlobalHook();
 
-rdcpair<RDResult, uint32_t> InjectIntoProcess(uint32_t pid,
-                                              const rdcarray<EnvironmentModification> &env,
-                                              const rdcstr &capturefile, const CaptureOptions &opts,
-                                              bool waitForExit);
+// Injection method enum: choose between CreateRemoteThread or SetThreadContext injection
+enum class InjectionMethod
+{
+  CreateRemoteThread = 0,    // Default method, inject via CreateRemoteThread
+  SetThreadContext,          // Hijack main thread via SetThreadContext for injection
+};
+
+rdcpair<RDResult, uint32_t> InjectIntoProcess(
+    uint32_t pid, const rdcarray<EnvironmentModification> &env, const rdcstr &capturefile,
+    const CaptureOptions &opts, bool waitForExit,
+    InjectionMethod method = InjectionMethod::CreateRemoteThread, void *hThread = NULL);
 struct ProcessResult
 {
   rdcstr strStdout, strStderror;

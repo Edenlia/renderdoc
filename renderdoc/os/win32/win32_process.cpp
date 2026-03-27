@@ -432,6 +432,371 @@ void InjectFunctionCall(HANDLE hProcess, uintptr_t renderdoc_remote, const char 
   VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Helper functions and implementation for SetThreadContext injection
+//////////////////////////////////////////////////////////////////////////
+
+// Build x64 shellcode for calling a function in the remote process
+// Shellcode flow: set param -> call function -> set completion flag -> infinite loop waiting for SuspendThread
+static bool BuildCallShellcode_x64(rdcarray<byte> &shellcode, uintptr_t funcAddr,
+                                   uintptr_t paramAddr, uintptr_t completionFlagAddr)
+{
+  shellcode.clear();
+
+  // sub rsp, 0x28  (reserve shadow space 32 bytes + alignment 8 bytes = 0x28)
+  shellcode.push_back(0x48);
+  shellcode.push_back(0x83);
+  shellcode.push_back(0xEC);
+  shellcode.push_back(0x28);
+
+  // mov rcx, <paramAddr>  (first parameter, Windows x64 calling convention)
+  shellcode.push_back(0x48);
+  shellcode.push_back(0xB9);
+  for(int i = 0; i < 8; i++)
+    shellcode.push_back((byte)((paramAddr >> (i * 8)) & 0xFF));
+
+  // mov rax, <funcAddr>  (function address)
+  shellcode.push_back(0x48);
+  shellcode.push_back(0xB8);
+  for(int i = 0; i < 8; i++)
+    shellcode.push_back((byte)((funcAddr >> (i * 8)) & 0xFF));
+
+  // call rax
+  shellcode.push_back(0xFF);
+  shellcode.push_back(0xD0);
+
+  // mov rax, <completionFlagAddr>
+  shellcode.push_back(0x48);
+  shellcode.push_back(0xB8);
+  for(int i = 0; i < 8; i++)
+    shellcode.push_back((byte)((completionFlagAddr >> (i * 8)) & 0xFF));
+
+  // mov dword ptr [rax], 1  (set completion flag to 1)
+  shellcode.push_back(0xC7);
+  shellcode.push_back(0x00);
+  shellcode.push_back(0x01);
+  shellcode.push_back(0x00);
+  shellcode.push_back(0x00);
+  shellcode.push_back(0x00);
+
+  // jmp $  (infinite loop, waiting for injector to SuspendThread)
+  // EB FE = jmp short -2 (jump to self)
+  shellcode.push_back(0xEB);
+  shellcode.push_back(0xFE);
+
+  return true;
+}
+
+// Wait for remote shellcode execution to complete (by polling the completion flag)
+// On success, calls SuspendThread to suspend the main thread
+static bool WaitForShellcodeCompletion(HANDLE hProcess, uintptr_t completionFlagAddr,
+                                       HANDLE hThread, DWORD timeoutMs = 10000)
+{
+  DWORD elapsed = 0;
+  const DWORD pollInterval = 10;    // poll every 10ms
+
+  while(elapsed < timeoutMs)
+  {
+    LONG flag = 0;
+    SIZE_T bytesRead = 0;
+    if(ReadProcessMemory(hProcess, (LPCVOID)completionFlagAddr, &flag, sizeof(flag), &bytesRead))
+    {
+      if(flag == 1)
+      {
+        // shellcode execution completed, suspend the thread
+        SuspendThread(hThread);
+        RDCDEBUG("Shellcode completed successfully, thread suspended");
+        return true;
+      }
+    }
+
+    Sleep(pollInterval);
+    elapsed += pollInterval;
+  }
+
+  RDCERR("Shellcode execution timed out after %u ms", timeoutMs);
+  // also try to suspend thread on timeout, to prevent shellcode from continuing
+  SuspendThread(hThread);
+  return false;
+}
+
+// Load DLL via SetThreadContext method
+static bool InjectDLL_SetThreadContext(HANDLE hProcess, HANDLE hThread, rdcwstr libName,
+                                       bool isWow64)
+{
+  // x86 branch: not yet implemented, fall back to CreateRemoteThread
+  if(isWow64)
+  {
+    RDCWARN("TODO: x86 SetThreadContext injection not implemented, falling back to CreateRemoteThread");
+    InjectDLL(hProcess, libName);
+    return true;
+  }
+
+#if ENABLED(RDOC_X64)
+  // save original thread context
+  CONTEXT originalCtx = {};
+  originalCtx.ContextFlags = CONTEXT_FULL;
+  if(!GetThreadContext(hThread, &originalCtx))
+  {
+    RDCERR("GetThreadContext failed: %u", GetLastError());
+    return false;
+  }
+
+  RDCDEBUG("Original RIP: 0x%llx, RSP: 0x%llx", (uint64_t)originalCtx.Rip,
+           (uint64_t)originalCtx.Rsp);
+
+  // get LoadLibraryW address (kernel32.dll has the same base address in all processes)
+  static HMODULE kernel32 = GetModuleHandleA("kernel32.dll");
+  if(kernel32 == NULL)
+  {
+    RDCERR("Couldn't get handle for kernel32.dll");
+    return false;
+  }
+
+  uintptr_t loadLibraryAddr = (uintptr_t)GetProcAddress(kernel32, "LoadLibraryW");
+  if(loadLibraryAddr == 0)
+  {
+    RDCERR("Couldn't get address of LoadLibraryW");
+    return false;
+  }
+
+  // calculate remote memory layout
+  // [completionFlag (4 bytes)] [padding (4 bytes)] [DLL path (wchar_t[])] [shellcode]
+  size_t dllPathSize = (libName.length() + 1) * sizeof(wchar_t);
+  size_t completionFlagOffset = 0;
+  size_t dllPathOffset = 8;    // 4 bytes flag + 4 bytes padding, keep 8-byte aligned
+  size_t shellcodeOffset = dllPathOffset + ((dllPathSize + 15) & ~15);    // 16-byte aligned
+
+  // build shellcode
+  rdcarray<byte> shellcode;
+  // these addresses will be calculated after allocating remote memory, use placeholders for now
+  // we need to know the total size first to allocate memory
+
+  // estimated shellcode size (~50 bytes actual, reserve 128 bytes)
+  size_t totalSize = shellcodeOffset + 128;
+
+  // allocate memory in the remote process
+  void *remoteMem =
+      VirtualAllocEx(hProcess, NULL, totalSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+  if(!remoteMem)
+  {
+    RDCERR("VirtualAllocEx failed for SetThreadContext DLL injection: %u", GetLastError());
+    return false;
+  }
+
+  uintptr_t remoteBase = (uintptr_t)remoteMem;
+  uintptr_t completionFlagAddr = remoteBase + completionFlagOffset;
+  uintptr_t dllPathAddr = remoteBase + dllPathOffset;
+  uintptr_t shellcodeAddr = remoteBase + shellcodeOffset;
+
+  RDCDEBUG("Remote memory: base=0x%llx, completionFlag=0x%llx, dllPath=0x%llx, shellcode=0x%llx",
+           (uint64_t)remoteBase, (uint64_t)completionFlagAddr, (uint64_t)dllPathAddr,
+           (uint64_t)shellcodeAddr);
+
+  // build the actual shellcode
+  BuildCallShellcode_x64(shellcode, loadLibraryAddr, dllPathAddr, completionFlagAddr);
+
+  // write completion flag (initial value 0)
+  LONG zeroFlag = 0;
+  SIZE_T bytesWritten = 0;
+  if(!WriteProcessMemory(hProcess, (LPVOID)completionFlagAddr, &zeroFlag, sizeof(zeroFlag),
+                         &bytesWritten))
+  {
+    RDCERR("WriteProcessMemory (completionFlag) failed: %u", GetLastError());
+    VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
+    return false;
+  }
+
+  // write DLL path
+  if(!WriteProcessMemory(hProcess, (LPVOID)dllPathAddr, libName.c_str(), dllPathSize,
+                         &bytesWritten))
+  {
+    RDCERR("WriteProcessMemory (dllPath) failed: %u", GetLastError());
+    VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
+    return false;
+  }
+
+  // write shellcode
+  if(!WriteProcessMemory(hProcess, (LPVOID)shellcodeAddr, shellcode.data(), shellcode.size(),
+                         &bytesWritten))
+  {
+    RDCERR("WriteProcessMemory (shellcode) failed: %u", GetLastError());
+    VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
+    return false;
+  }
+
+  // modify thread context, point RIP to shellcode
+  CONTEXT newCtx = originalCtx;
+  newCtx.Rip = shellcodeAddr;
+  // ensure RSP is 16-byte aligned
+  newCtx.Rsp = newCtx.Rsp & ~0xFull;
+
+  if(!SetThreadContext(hThread, &newCtx))
+  {
+    RDCERR("SetThreadContext failed: %u", GetLastError());
+    VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
+    return false;
+  }
+
+  // resume thread to execute shellcode
+  ResumeThread(hThread);
+
+  // wait for shellcode execution to complete
+  bool completed = WaitForShellcodeCompletion(hProcess, completionFlagAddr, hThread);
+
+  // restore original thread context (restore RIP and other registers)
+  if(!SetThreadContext(hThread, &originalCtx))
+  {
+    RDCERR("Failed to restore original thread context: %u", GetLastError());
+    VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
+    return false;
+  }
+
+  // clean up remote memory
+  VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
+
+  if(!completed)
+  {
+    RDCERR("InjectDLL_SetThreadContext: shellcode execution failed or timed out");
+    return false;
+  }
+
+  RDCDEBUG("InjectDLL_SetThreadContext: DLL loaded successfully via SetThreadContext");
+  return true;
+
+#else
+  // non-x64 build environment
+  RDCWARN("SetThreadContext injection only supported on x64, falling back to CreateRemoteThread");
+  InjectDLL(hProcess, libName);
+  return true;
+#endif
+}
+
+// Call a remote function via SetThreadContext method
+static void InjectFunctionCall_SetThreadContext(HANDLE hProcess, HANDLE hThread,
+                                                uintptr_t renderdoc_remote, const char *funcName,
+                                                void *data, const size_t dataLen, bool isWow64)
+{
+  if(dataLen == 0)
+  {
+    RDCERR("Invalid function call injection attempt");
+    return;
+  }
+
+  // x86 branch: not yet implemented, fall back to CreateRemoteThread
+  if(isWow64)
+  {
+    RDCWARN(
+        "TODO: x86 SetThreadContext function call not implemented, falling back to "
+        "CreateRemoteThread");
+    InjectFunctionCall(hProcess, renderdoc_remote, funcName, data, dataLen);
+    return;
+  }
+
+#if ENABLED(RDOC_X64)
+  RDCDEBUG("Injecting call to %s via SetThreadContext", funcName);
+
+  // use the same address calculation as existing InjectFunctionCall to get remote function address
+  HMODULE renderdoc_local = GetModuleHandleA(STRINGIZE(RDOC_BASE_NAME) ".dll");
+  uintptr_t func_local = (uintptr_t)GetProcAddress(renderdoc_local, funcName);
+  uintptr_t func_remote = func_local + renderdoc_remote - (uintptr_t)renderdoc_local;
+
+  RDCDEBUG("Remote function %s at 0x%llx", funcName, (uint64_t)func_remote);
+
+  // save original thread context
+  CONTEXT originalCtx = {};
+  originalCtx.ContextFlags = CONTEXT_FULL;
+  if(!GetThreadContext(hThread, &originalCtx))
+  {
+    RDCERR("GetThreadContext failed for %s: %u", funcName, GetLastError());
+    return;
+  }
+
+  // calculate remote memory layout
+  // [completionFlag (4 bytes)] [padding (4 bytes)] [param data (dataLen bytes)] [shellcode]
+  size_t completionFlagOffset = 0;
+  size_t dataOffset = 8;    // 4 bytes flag + 4 bytes padding
+  size_t shellcodeOffset = dataOffset + ((dataLen + 15) & ~15);    // 16-byte aligned
+
+  size_t totalSize = shellcodeOffset + 128;    // reserve shellcode space
+
+  // allocate memory in the remote process
+  void *remoteMem =
+      VirtualAllocEx(hProcess, NULL, totalSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+  if(!remoteMem)
+  {
+    RDCERR("VirtualAllocEx failed for SetThreadContext function call %s: %u", funcName,
+           GetLastError());
+    return;
+  }
+
+  uintptr_t remoteBase = (uintptr_t)remoteMem;
+  uintptr_t completionFlagAddr = remoteBase + completionFlagOffset;
+  uintptr_t dataAddr = remoteBase + dataOffset;
+  uintptr_t shellcodeAddr = remoteBase + shellcodeOffset;
+
+  // build shellcode
+  rdcarray<byte> shellcode;
+  BuildCallShellcode_x64(shellcode, func_remote, dataAddr, completionFlagAddr);
+
+  // write completion flag (initial value 0)
+  LONG zeroFlag = 0;
+  SIZE_T bytesWritten = 0;
+  WriteProcessMemory(hProcess, (LPVOID)completionFlagAddr, &zeroFlag, sizeof(zeroFlag),
+                     &bytesWritten);
+
+  // write parameter data
+  WriteProcessMemory(hProcess, (LPVOID)dataAddr, data, dataLen, &bytesWritten);
+
+  // write shellcode
+  WriteProcessMemory(hProcess, (LPVOID)shellcodeAddr, shellcode.data(), shellcode.size(),
+                     &bytesWritten);
+
+  // modify thread context
+  CONTEXT newCtx = originalCtx;
+  newCtx.Rip = shellcodeAddr;
+  newCtx.Rsp = newCtx.Rsp & ~0xFull;
+
+  if(!SetThreadContext(hThread, &newCtx))
+  {
+    RDCERR("SetThreadContext failed for %s: %u", funcName, GetLastError());
+    VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
+    return;
+  }
+
+  // resume thread to execute shellcode
+  ResumeThread(hThread);
+
+  // wait for shellcode execution to complete
+  bool completed = WaitForShellcodeCompletion(hProcess, completionFlagAddr, hThread);
+
+  if(!completed)
+  {
+    RDCERR("InjectFunctionCall_SetThreadContext: %s execution timed out", funcName);
+  }
+
+  // read back parameter data (consistent with existing InjectFunctionCall behavior)
+  SIZE_T bytesRead = 0;
+  ReadProcessMemory(hProcess, (LPCVOID)dataAddr, data, dataLen, &bytesRead);
+
+  // restore original thread context
+  if(!SetThreadContext(hThread, &originalCtx))
+  {
+    RDCERR("Failed to restore original thread context for %s: %u", funcName, GetLastError());
+  }
+
+  // clean up remote memory
+  VirtualFreeEx(hProcess, remoteMem, 0, MEM_RELEASE);
+
+  RDCDEBUG("InjectFunctionCall_SetThreadContext: %s completed", funcName);
+
+#else
+  // non-x64 build environment, fall back to CreateRemoteThread
+  RDCWARN("SetThreadContext injection only supported on x64, falling back to CreateRemoteThread");
+  InjectFunctionCall(hProcess, renderdoc_remote, funcName, data, dataLen);
+#endif
+}
+
 static PROCESS_INFORMATION RunProcess(const rdcstr &app, const rdcstr &workingDir,
                                       const rdcstr &cmdLine,
                                       const rdcarray<EnvironmentModification> &env, bool internal,
@@ -574,8 +939,21 @@ static PROCESS_INFORMATION RunProcess(const rdcstr &app, const rdcstr &workingDi
 rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
                                                        const rdcarray<EnvironmentModification> &env,
                                                        const rdcstr &capturefile,
-                                                       const CaptureOptions &opts, bool waitForExit)
+                                                       const CaptureOptions &opts, bool waitForExit,
+                                                       InjectionMethod method, void *hThread)
 {
+  // cast void* to HANDLE
+  HANDLE hInjThread = (HANDLE)hThread;
+
+  // if SetThreadContext was requested but no thread handle provided, fall back to CreateRemoteThread
+  if(method == InjectionMethod::SetThreadContext && hInjThread == NULL)
+  {
+    RDCWARN(
+        "SetThreadContext injection requested but no thread handle provided, "
+        "falling back to CreateRemoteThread");
+    method = InjectionMethod::CreateRemoteThread;
+  }
+
   rdcwstr wcapturefile = StringFormat::UTF82Wide(capturefile);
 
   HANDLE hProcess =
@@ -970,73 +1348,170 @@ rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
     return {ResultCode::Succeeded, (uint32_t)exitCode};
   }
 
-  InjectDLL(hProcess, renderdocPath);
-
-  const char *rdoc_dll = STRINGIZE(RDOC_BASE_NAME);
-
-  uintptr_t loc = FindRemoteDLL(pid, STRINGIZE(RDOC_BASE_NAME) ".dll");
-
-  rdcpair<RDResult, uint32_t> result = {ResultCode::Succeeded, 0};
-
-  if(loc == 0)
+  // choose injection path based on the injection method
+  if(method == InjectionMethod::SetThreadContext)
   {
-    SET_ERROR_RESULT(
-        result.first, ResultCode::InjectionFailed,
-        "Failed to inject %s.dll into process. Check that the process did not crash or exit "
-        "early in initialisation, e.g. if the working directory is incorrectly set.",
-        rdoc_dll);
+    //////////////////////////////////////////////////////////////////////////
+    // SetThreadContext injection path
+    //////////////////////////////////////////////////////////////////////////
+
+    // load DLL via SetThreadContext method
+    if(!InjectDLL_SetThreadContext(hProcess, hInjThread, renderdocPath, isWow64))
+    {
+      RDCERR("InjectDLL_SetThreadContext failed");
+      CloseHandle(hProcess);
+      RDResult res;
+      SET_ERROR_RESULT(res, ResultCode::InjectionFailed,
+                       "Failed to inject DLL via SetThreadContext.");
+      return {res, 0};
+    }
+
+    const char *rdoc_dll = STRINGIZE(RDOC_BASE_NAME);
+
+    uintptr_t loc = FindRemoteDLL(pid, STRINGIZE(RDOC_BASE_NAME) ".dll");
+
+    rdcpair<RDResult, uint32_t> result = {ResultCode::Succeeded, 0};
+
+    if(loc == 0)
+    {
+      SET_ERROR_RESULT(
+          result.first, ResultCode::InjectionFailed,
+          "Failed to find %s.dll in process after SetThreadContext injection. "
+          "Check that the process did not crash or exit early in initialisation.",
+          rdoc_dll);
+    }
+    else
+    {
+      // call configuration functions sequentially via SetThreadContext
+
+      if(!capturefile.empty())
+        InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc, "INTERNAL_SetCaptureFile",
+                                           (void *)capturefile.c_str(), capturefile.size() + 1,
+                                           isWow64);
+
+      rdcstr debugLogfile = RDCGETLOGFILE();
+
+      InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc, "INTERNAL_SetDebugLogFile",
+                                         (void *)debugLogfile.c_str(), debugLogfile.size() + 1,
+                                         isWow64);
+
+      InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc, "INTERNAL_SetCaptureOptions",
+                                         (CaptureOptions *)&opts, sizeof(CaptureOptions), isWow64);
+
+      InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc,
+                                         "INTERNAL_GetTargetControlIdent", &result.second,
+                                         sizeof(result.second), isWow64);
+
+      if(!env.empty())
+      {
+        for(const EnvironmentModification &e : env)
+        {
+          rdcstr name = e.name.trimmed();
+          rdcstr value = e.value;
+          EnvMod mod = e.mod;
+          EnvSep sep = e.sep;
+
+          if(name == "")
+            break;
+
+          InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc, "INTERNAL_EnvModName",
+                                             (void *)name.c_str(), name.size() + 1, isWow64);
+          InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc, "INTERNAL_EnvModValue",
+                                             (void *)value.c_str(), value.size() + 1, isWow64);
+          InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc, "INTERNAL_EnvSep", &sep,
+                                             sizeof(sep), isWow64);
+          InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc, "INTERNAL_EnvMod", &mod,
+                                             sizeof(mod), isWow64);
+        }
+
+        // parameter is unused
+        void *dummy = NULL;
+        InjectFunctionCall_SetThreadContext(hProcess, hInjThread, loc, "INTERNAL_ApplyEnvMods",
+                                           &dummy, sizeof(dummy), isWow64);
+      }
+    }
+
+    if(waitForExit)
+      WaitForSingleObject(hProcess, INFINITE);
+
+    CloseHandle(hProcess);
+
+    return result;
   }
   else
   {
-    // safe to cast away the const as we know these functions don't modify the parameters
+    //////////////////////////////////////////////////////////////////////////
+    // CreateRemoteThread injection path (original logic, unchanged)
+    //////////////////////////////////////////////////////////////////////////
 
-    if(!capturefile.empty())
-      InjectFunctionCall(hProcess, loc, "INTERNAL_SetCaptureFile", (void *)capturefile.c_str(),
-                         capturefile.size() + 1);
+    InjectDLL(hProcess, renderdocPath);
 
-    rdcstr debugLogfile = RDCGETLOGFILE();
+    const char *rdoc_dll = STRINGIZE(RDOC_BASE_NAME);
 
-    InjectFunctionCall(hProcess, loc, "INTERNAL_SetDebugLogFile", (void *)debugLogfile.c_str(),
-                       debugLogfile.size() + 1);
+    uintptr_t loc = FindRemoteDLL(pid, STRINGIZE(RDOC_BASE_NAME) ".dll");
 
-    InjectFunctionCall(hProcess, loc, "INTERNAL_SetCaptureOptions", (CaptureOptions *)&opts,
-                       sizeof(CaptureOptions));
+    rdcpair<RDResult, uint32_t> result = {ResultCode::Succeeded, 0};
 
-    InjectFunctionCall(hProcess, loc, "INTERNAL_GetTargetControlIdent", &result.second,
-                       sizeof(result.second));
-
-    if(!env.empty())
+    if(loc == 0)
     {
-      for(const EnvironmentModification &e : env)
-      {
-        rdcstr name = e.name.trimmed();
-        rdcstr value = e.value;
-        EnvMod mod = e.mod;
-        EnvSep sep = e.sep;
-
-        if(name == "")
-          break;
-
-        InjectFunctionCall(hProcess, loc, "INTERNAL_EnvModName", (void *)name.c_str(),
-                           name.size() + 1);
-        InjectFunctionCall(hProcess, loc, "INTERNAL_EnvModValue", (void *)value.c_str(),
-                           value.size() + 1);
-        InjectFunctionCall(hProcess, loc, "INTERNAL_EnvSep", &sep, sizeof(sep));
-        InjectFunctionCall(hProcess, loc, "INTERNAL_EnvMod", &mod, sizeof(mod));
-      }
-
-      // parameter is unused
-      void *dummy = NULL;
-      InjectFunctionCall(hProcess, loc, "INTERNAL_ApplyEnvMods", &dummy, sizeof(dummy));
+      SET_ERROR_RESULT(
+          result.first, ResultCode::InjectionFailed,
+          "Failed to inject %s.dll into process. Check that the process did not crash or exit "
+          "early in initialisation, e.g. if the working directory is incorrectly set.",
+          rdoc_dll);
     }
+    else
+    {
+      // safe to cast away the const as we know these functions don't modify the parameters
+
+      if(!capturefile.empty())
+        InjectFunctionCall(hProcess, loc, "INTERNAL_SetCaptureFile", (void *)capturefile.c_str(),
+                           capturefile.size() + 1);
+
+      rdcstr debugLogfile = RDCGETLOGFILE();
+
+      InjectFunctionCall(hProcess, loc, "INTERNAL_SetDebugLogFile", (void *)debugLogfile.c_str(),
+                         debugLogfile.size() + 1);
+
+      InjectFunctionCall(hProcess, loc, "INTERNAL_SetCaptureOptions", (CaptureOptions *)&opts,
+                         sizeof(CaptureOptions));
+
+      InjectFunctionCall(hProcess, loc, "INTERNAL_GetTargetControlIdent", &result.second,
+                         sizeof(result.second));
+
+      if(!env.empty())
+      {
+        for(const EnvironmentModification &e : env)
+        {
+          rdcstr name = e.name.trimmed();
+          rdcstr value = e.value;
+          EnvMod mod = e.mod;
+          EnvSep sep = e.sep;
+
+          if(name == "")
+            break;
+
+          InjectFunctionCall(hProcess, loc, "INTERNAL_EnvModName", (void *)name.c_str(),
+                             name.size() + 1);
+          InjectFunctionCall(hProcess, loc, "INTERNAL_EnvModValue", (void *)value.c_str(),
+                             value.size() + 1);
+          InjectFunctionCall(hProcess, loc, "INTERNAL_EnvSep", &sep, sizeof(sep));
+          InjectFunctionCall(hProcess, loc, "INTERNAL_EnvMod", &mod, sizeof(mod));
+        }
+
+        // parameter is unused
+        void *dummy = NULL;
+        InjectFunctionCall(hProcess, loc, "INTERNAL_ApplyEnvMods", &dummy, sizeof(dummy));
+      }
+    }
+
+    if(waitForExit)
+      WaitForSingleObject(hProcess, INFINITE);
+
+    CloseHandle(hProcess);
+
+    return result;
   }
-
-  if(waitForExit)
-    WaitForSingleObject(hProcess, INFINITE);
-
-  CloseHandle(hProcess);
-
-  return result;
 }
 
 uint32_t Process::LaunchProcess(const rdcstr &app, const rdcstr &workingDir, const rdcstr &cmdLine,
@@ -1163,7 +1638,9 @@ rdcpair<RDResult, uint32_t> Process::LaunchAndInjectIntoProcess(
     return {result, 0};
   }
 
-  rdcpair<RDResult, uint32_t> ret = InjectIntoProcess(pi.dwProcessId, {}, capturefile, opts, false);
+  rdcpair<RDResult, uint32_t> ret = InjectIntoProcess(
+      pi.dwProcessId, {}, capturefile, opts, false,
+      Process::InjectionMethod::SetThreadContext, (void *)pi.hThread);
 
   CloseHandle(pi.hProcess);
   ResumeThread(pi.hThread);
