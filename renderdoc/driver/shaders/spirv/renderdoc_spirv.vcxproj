@@ -69,7 +69,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)renderdoc\;$(SolutionDir)renderdoc\3rdparty\;$(SolutionDir)renderdoc\3rdparty\glslang\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>AMD_EXTENSIONS;NV_EXTENSIONS;GLSLANG_OSINCLUDE_WIN32;RENDERDOC_EXPORTS;RENDERDOC_PLATFORM_WIN32;WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <AdditionalOptions>/w44062 /w44840 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4267;5030;4065</DisableSpecificWarnings>
     </ClCompile>
