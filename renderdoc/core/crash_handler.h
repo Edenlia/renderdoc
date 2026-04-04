@@ -24,7 +24,7 @@
  ******************************************************************************/
 
 // currently breakpad crash-handler is only available on windows
-#if ENABLED(RDOC_RELEASE) && ENABLED(RDOC_WIN32) && RENDERDOC_OFFICIAL_BUILD
+#if ENABLED(RDOC_RELEASE) && ENABLED(RDOC_WIN32) && REDENDOC_OFFICIAL_BUILD
 
 #define RDOC_CRASH_HANDLER OPTION_ON
 

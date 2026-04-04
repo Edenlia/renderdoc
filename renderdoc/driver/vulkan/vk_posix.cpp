@@ -247,23 +247,23 @@ static rdcstr GenerateJSON(const rdcstr &sopath)
 
   json = json.substr(0, idx) + sopath + json.substr(idx + sizeof(modulePathString) - 1);
 
-  const char majorString[] = "@RENDERDOC_VERSION_MAJOR@";
+  const char majorString[] = "@REDENDOC_VERSION_MAJOR@";
 
   idx = json.find(majorString);
   while(idx >= 0)
   {
-    json = json.substr(0, idx) + STRINGIZE(RENDERDOC_VERSION_MAJOR) +
+    json = json.substr(0, idx) + STRINGIZE(REDENDOC_VERSION_MAJOR) +
                                            json.substr(idx + sizeof(majorString) - 1);
 
     idx = json.find(majorString);
   }
 
-  const char minorString[] = "@RENDERDOC_VERSION_MINOR@";
+  const char minorString[] = "@REDENDOC_VERSION_MINOR@";
 
   idx = json.find(minorString);
   while(idx >= 0)
   {
-    json = json.substr(0, idx) + STRINGIZE(RENDERDOC_VERSION_MINOR) +
+    json = json.substr(0, idx) + STRINGIZE(REDENDOC_VERSION_MINOR) +
                                            json.substr(idx + sizeof(minorString) - 1);
 
     idx = json.find(minorString);
@@ -359,7 +359,7 @@ ITERABLE_OPERATORS(LayerPath);
 rdcstr LayerRegistrationPath(LayerPath path)
 {
   const rdcstr json_filename =
-      VulkanLayerJSONBasename + "_capture" STRINGIZE(RENDERDOC_VULKAN_JSON_SUFFIX) ".json";
+      VulkanLayerJSONBasename + "_capture" STRINGIZE(REDENDOC_VULKAN_JSON_SUFFIX) ".json";
 
   switch(path)
   {

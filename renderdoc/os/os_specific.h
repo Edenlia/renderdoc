@@ -46,7 +46,7 @@ struct CaptureOptions;
 struct EnvironmentModification;
 struct PathEntry;
 enum class WindowingSystem : uint32_t;
-typedef std::function<void(float)> RENDERDOC_ProgressCallback;
+typedef std::function<void(float)> REDENDOC_ProgressCallback;
 
 namespace Process
 {
@@ -290,7 +290,7 @@ Stackwalk *Collect();
 Stackwalk *Create();
 
 StackResolver *MakeResolver(bool interactive, byte *moduleDB, size_t DBSize,
-                            RENDERDOC_ProgressCallback);
+                            REDENDOC_ProgressCallback);
 
 bool GetLoadedModules(byte *buf, size_t &size);
 };    // namespace Callstack

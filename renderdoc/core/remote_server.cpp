@@ -48,7 +48,7 @@ RDOC_CONFIG(bool, RemoteServer_DebugLogging, false,
 #define MAKE_REMOTE_SERVER_VERSION(maj, min) uint32_t((maj)*1000) + (min)
 
 static const uint32_t RemoteServerProtocolVersion =
-    MAKE_REMOTE_SERVER_VERSION(RENDERDOC_VERSION_MAJOR, RENDERDOC_VERSION_MINOR);
+    MAKE_REMOTE_SERVER_VERSION(REDENDOC_VERSION_MAJOR, REDENDOC_VERSION_MINOR);
 
 enum class RemoteServerPacket
 {
@@ -281,7 +281,7 @@ static bool HandleHandshakeClient(ActiveClient &activeClient, ClientThread *thre
 }
 
 static void ActiveRemoteClientThread(ClientThread *threadData,
-                                     RENDERDOC_PreviewWindowCallback previewWindow)
+                                     REDENDOC_PreviewWindowCallback previewWindow)
 {
   Threading::SetCurrentThreadName("ActiveRemoteClientThread");
 
@@ -595,7 +595,7 @@ static void ActiveRemoteClientThread(ClientThread *threadData,
             }
           }
 
-          RenderDoc::Inst().SetProgressCallback<LoadProgress>(RENDERDOC_ProgressCallback());
+          RenderDoc::Inst().SetProgressCallback<LoadProgress>(REDENDOC_ProgressCallback());
 
           kill = true;
           Threading::JoinThread(ticker);
@@ -1065,7 +1065,7 @@ static void ActiveRemoteClientThread(ClientThread *threadData,
 
 void RenderDoc::BecomeRemoteServer(const rdcstr &listenhost, uint16_t port,
                                    std::function<bool()> killReplay,
-                                   RENDERDOC_PreviewWindowCallback previewWindow)
+                                   REDENDOC_PreviewWindowCallback previewWindow)
 {
   Network::Socket *sock = Network::CreateServerSocket(listenhost, port, 1);
 
@@ -1278,7 +1278,7 @@ void RenderDoc::BecomeRemoteServer(const rdcstr &listenhost, uint16_t port,
 }
 
 extern "C" RENDERDOC_API ResultDetails RENDERDOC_CC
-RENDERDOC_CreateRemoteServerConnection(const rdcstr &URL, IRemoteServer **rend)
+REDENDOC_CreateRemoteServerConnection(const rdcstr &URL, IRemoteServer **rend)
 {
   rdcstr host = "localhost";
   if(!URL.empty())
@@ -1395,9 +1395,9 @@ RENDERDOC_CreateRemoteServerConnection(const rdcstr &URL, IRemoteServer **rend)
 }
 
 extern "C" RENDERDOC_API ResultDetails RENDERDOC_CC
-RENDERDOC_CheckRemoteServerConnection(const rdcstr &URL)
+REDENDOC_CheckRemoteServerConnection(const rdcstr &URL)
 {
-  return RENDERDOC_CreateRemoteServerConnection(URL, NULL);
+  return REDENDOC_CreateRemoteServerConnection(URL, NULL);
 }
 
 #undef WRITE_DATA_SCOPE
@@ -1669,7 +1669,7 @@ ExecuteResult RemoteServer::ExecuteAndInject(const rdcstr &app, const rdcstr &wo
 }
 
 void RemoteServer::CopyCaptureFromRemote(const rdcstr &remotepath, const rdcstr &localpath,
-                                         RENDERDOC_ProgressCallback progress)
+                                         REDENDOC_ProgressCallback progress)
 {
   {
     WRITE_DATA_SCOPE();
@@ -1702,7 +1702,7 @@ void RemoteServer::CopyCaptureFromRemote(const rdcstr &remotepath, const rdcstr 
   }
 }
 
-rdcstr RemoteServer::CopyCaptureToRemote(const rdcstr &filename, RENDERDOC_ProgressCallback progress)
+rdcstr RemoteServer::CopyCaptureToRemote(const rdcstr &filename, REDENDOC_ProgressCallback progress)
 {
   FILE *fileHandle = FileIO::fopen(filename, FileIO::ReadBinary);
 
@@ -1753,7 +1753,7 @@ void RemoteServer::TakeOwnershipCapture(const rdcstr &filename)
 
 rdcpair<ResultDetails, IReplayController *> RemoteServer::OpenCapture(
     uint32_t proxyid, const rdcstr &filename, const ReplayOptions &opts,
-    RENDERDOC_ProgressCallback progress)
+    REDENDOC_ProgressCallback progress)
 {
   rdcpair<ResultDetails, IReplayController *> ret;
   ret.first = ResultCode::InternalError;
@@ -2161,7 +2161,7 @@ bool RemoteServer::HasCallstacks()
   return hasCallstacks;
 }
 
-ResultDetails RemoteServer::InitResolver(bool interactive, RENDERDOC_ProgressCallback progress)
+ResultDetails RemoteServer::InitResolver(bool interactive, REDENDOC_ProgressCallback progress)
 {
   {
     WRITE_DATA_SCOPE();

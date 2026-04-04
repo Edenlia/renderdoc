@@ -326,7 +326,7 @@ AndroidVersionCheckResult CheckAndroidServerVersion(const rdcstr &deviceID, ABI 
 
   // Compare the server's versionCode and versionName with the host's for compatibility
   rdcstr hostVersionCode =
-      rdcstr(STRINGIZE(RENDERDOC_VERSION_MAJOR)) + rdcstr(STRINGIZE(RENDERDOC_VERSION_MINOR));
+      rdcstr(STRINGIZE(REDENDOC_VERSION_MAJOR)) + rdcstr(STRINGIZE(REDENDOC_VERSION_MINOR));
   rdcstr hostVersionName = GitVersionHash;
 
   // False positives will hurt us, so check for explicit matches
@@ -421,8 +421,8 @@ RDResult InstallRenderDocServer(const rdcstr &deviceID)
 
   rdcarray<rdcstr> paths;
 
-#if defined(RENDERDOC_APK_PATH)
-  rdcstr customPath(RENDERDOC_APK_PATH);
+#if defined(REDENDOC_APK_PATH)
+  rdcstr customPath(REDENDOC_APK_PATH);
 #else
   rdcstr customPath;
 #endif
@@ -470,7 +470,7 @@ RDResult InstallRenderDocServer(const rdcstr &deviceID)
 
   if(apksFolder.empty())
   {
-#if RENDERDOC_OFFICIAL_BUILD
+#if REDENDOC_OFFICIAL_BUILD
     RETURN_ERROR_RESULT(ResultCode::AndroidAPKFolderNotFound,
                         "RenderDoc APK not found. Your build of RenderDoc may be incomplete.\n"
                         "Check that your device is ARM based, other ABIs are not supported.");
@@ -588,7 +588,7 @@ RDResult InstallRenderDocServer(const rdcstr &deviceID)
   }
 
   // Ensure installation succeeded. We should have as many lines as abis we installed
-  Process::ProcessResult adbCheck = ListPackages(deviceID, RENDERDOC_ANDROID_PACKAGE_BASE);
+  Process::ProcessResult adbCheck = ListPackages(deviceID, REDENDOC_ANDROID_PACKAGE_BASE);
 
   if(adbCheck.strStdout.empty())
   {
@@ -612,7 +612,7 @@ bool RemoveRenderDocAndroidServer(const rdcstr &deviceID)
     return false;
 
   // remove the old package, if it's still there. Ignore any errors
-  adbExecCommand(deviceID, "uninstall " RENDERDOC_ANDROID_PACKAGE_BASE);
+  adbExecCommand(deviceID, "uninstall " REDENDOC_ANDROID_PACKAGE_BASE);
 
   for(ABI abi : abis)
   {
@@ -697,7 +697,7 @@ struct AndroidRemoteServer : public RemoteServer
 
   virtual rdcpair<ResultDetails, IReplayController *> OpenCapture(
       uint32_t proxyid, const rdcstr &filename, const ReplayOptions &opts,
-      RENDERDOC_ProgressCallback progress) override
+      REDENDOC_ProgressCallback progress) override
   {
     ResetAndroidSettings();
 
@@ -1147,7 +1147,7 @@ struct AndroidController : public IDeviceProtocolHandler
       }
 
       rdcstr packagesOutput =
-          Android::ListPackages(deviceID, RENDERDOC_ANDROID_PACKAGE_BASE).strStdout.trimmed();
+          Android::ListPackages(deviceID, REDENDOC_ANDROID_PACKAGE_BASE).strStdout.trimmed();
 
       rdcarray<rdcstr> packages;
       split(packagesOutput, packages, '\n');
@@ -1237,10 +1237,10 @@ struct AndroidController : public IDeviceProtocolHandler
       // make Oculus' on device vulkan validation layer available for load
       Android::adbExecCommand(
           deviceID,
-          "shell setprop debug.oculus.usepackagedvvl." RENDERDOC_ANDROID_PACKAGE_BASE ".arm32 1");
+          "shell setprop debug.oculus.usepackagedvvl." REDENDOC_ANDROID_PACKAGE_BASE ".arm32 1");
       Android::adbExecCommand(
           deviceID,
-          "shell setprop debug.oculus.usepackagedvvl." RENDERDOC_ANDROID_PACKAGE_BASE ".arm64 1");
+          "shell setprop debug.oculus.usepackagedvvl." REDENDOC_ANDROID_PACKAGE_BASE ".arm64 1");
 
       rdcstr package = GetRenderDocPackageForABI(abis.back());
 
@@ -1424,9 +1424,9 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
       Android::adbExecCommand(m_deviceID,
                               "shell settings put global gpu_debug_layer_app " + layerPackage);
       Android::adbExecCommand(
-          m_deviceID, "shell settings put global gpu_debug_layers " RENDERDOC_VULKAN_LAYER_NAME);
+          m_deviceID, "shell settings put global gpu_debug_layers " REDENDOC_VULKAN_LAYER_NAME);
       Android::adbExecCommand(
-          m_deviceID, "shell settings put global gpu_debug_layers_gles " RENDERDOC_ANDROID_LIBRARY);
+          m_deviceID, "shell settings put global gpu_debug_layers_gles " REDENDOC_ANDROID_LIBRARY);
 
       // don't ignore the layers by default, only if we encounter an error
       Android::adbExecCommand(m_deviceID, "shell setprop debug.rdoc.IGNORE_LAYERS 0");
@@ -1454,8 +1454,8 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
       if(!checkString.contains("enable_gpu_debug_layers=1") ||
          !checkString.contains("gpu_debug_app=" + packageName) ||
          !checkString.contains("gpu_debug_layer_app=" + layerPackage) ||
-         !checkString.contains("gpu_debug_layers=" RENDERDOC_VULKAN_LAYER_NAME) ||
-         !checkString.contains("gpu_debug_layers_gles=" RENDERDOC_ANDROID_LIBRARY))
+         !checkString.contains("gpu_debug_layers=" REDENDOC_VULKAN_LAYER_NAME) ||
+         !checkString.contains("gpu_debug_layers_gles=" REDENDOC_ANDROID_LIBRARY))
       {
         info =
             "Do you have a strange device that requires extra setup?\n"
@@ -1481,7 +1481,7 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
 
       // enable the vulkan layer (will only be used by vulkan programs)
       Android::adbExecCommand(m_deviceID,
-                              "shell setprop debug.vulkan.layers " RENDERDOC_VULKAN_LAYER_NAME);
+                              "shell setprop debug.vulkan.layers " REDENDOC_VULKAN_LAYER_NAME);
     }
 
     rdcstr folderName = Android::GetFolderName(m_deviceID);
@@ -1502,7 +1502,7 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
     // set our property with the capture options encoded, to be picked up by the library on the
     // device
     Android::adbExecCommand(m_deviceID,
-                            StringFormat::Fmt("shell setprop debug.rdoc.RENDERDOC_CAPOPTS %s",
+                            StringFormat::Fmt("shell setprop debug.rdoc.REDENDOC_CAPOPTS %s",
                                               opts.EncodeAsString().c_str()));
 
     // try to push our settings file into the appdata folder
@@ -1513,7 +1513,7 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
     rdcstr installedPath = Android::GetPathForPackage(m_deviceID, packageName);
 
     rdcstr RDCLib = Android::adbExecCommand(m_deviceID, "shell ls " + installedPath +
-                                                            "/lib/*/" RENDERDOC_ANDROID_LIBRARY)
+                                                            "/lib/*/" REDENDOC_ANDROID_LIBRARY)
                         .strStdout.trimmed();
 
     if(Android_Debug_ProcessLaunch())
@@ -1527,12 +1527,12 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
 
     // some versions of adb/android also don't print any error message at all! Look to see if the
     // wildcard glob is still present.
-    if(RDCLib.find("/lib/*/" RENDERDOC_ANDROID_LIBRARY) >= 0)
+    if(RDCLib.find("/lib/*/" REDENDOC_ANDROID_LIBRARY) >= 0)
       RDCLib.clear();
 
     if(RDCLib.empty())
     {
-      RDCLOG("No library found in %s/lib/*/" RENDERDOC_ANDROID_LIBRARY
+      RDCLOG("No library found in %s/lib/*/" REDENDOC_ANDROID_LIBRARY
              " for %s - assuming injection is required.",
              installedPath.c_str(), packageName.c_str());
     }
@@ -1625,7 +1625,7 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
     while(elapsed < timeout)
     {
       // Check if the target app has started yet and we can connect to it.
-      ITargetControl *control = RENDERDOC_CreateTargetControl(
+      ITargetControl *control = REDENDOC_CreateTargetControl(
           AndroidController::m_Inst.GetProtocolName() + "://" + m_deviceID, ident, "testConnection",
           false);
       if(control)
@@ -1676,7 +1676,7 @@ AndroidController AndroidController::m_Inst;
 
 DeviceProtocolRegistration androidProtocol("adb", &AndroidController::Get);
 
-extern "C" RENDERDOC_API void RENDERDOC_CC RENDERDOC_CheckAndroidPackage(
+extern "C" RENDERDOC_API void RENDERDOC_CC REDENDOC_CheckAndroidPackage(
     const rdcstr &URL, const rdcstr &packageAndActivity, AndroidFlags *flags)
 {
   IDeviceProtocolHandler *adb = RenderDoc::Inst().GetDeviceProtocol("adb");

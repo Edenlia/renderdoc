@@ -73,7 +73,7 @@ class QMenu;
 
 // we also add some headers here that are only needed for Qt helpers in the replay interface, which
 // is not exposed to swig
-#define RENDERDOC_QT_COMPAT
+#define REDENDOC_QT_COMPAT
 #include <QColor>
 #include <QDateTime>
 #include <QList>

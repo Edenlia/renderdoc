@@ -1108,7 +1108,7 @@ Invalid if the object is not actually a :class:`ResourceId`.
 :rtype: ResourceId
 )");
   inline ResourceId AsResourceId() const { return data.basic.id; }
-#if defined(RENDERDOC_QT_COMPAT)
+#if defined(REDENDOC_QT_COMPAT)
   operator QVariant() const
   {
     switch(type.basetype)
@@ -1187,9 +1187,9 @@ protected:
 #ifdef RENDERDOC_EXPORTS
     ret = malloc(sz);
     if(ret == NULL)
-      RENDERDOC_OutOfMemory(sz);
+      REDENDOC_OutOfMemory(sz);
 #else
-    ret = RENDERDOC_AllocArrayMem(sz);
+    ret = REDENDOC_AllocArrayMem(sz);
 #endif
     return ret;
   }
@@ -1198,7 +1198,7 @@ protected:
 #ifdef RENDERDOC_EXPORTS
     free(p);
 #else
-    RENDERDOC_FreeArrayMem(p);
+    REDENDOC_FreeArrayMem(p);
 #endif
   }
 
@@ -1230,7 +1230,7 @@ private:
 
 DECLARE_REFLECTION_STRUCT(SDObject);
 
-#if defined(RENDERDOC_QT_COMPAT)
+#if defined(REDENDOC_QT_COMPAT)
 inline SDObject *makeSDObject(const rdcinflexiblestr &name, QVariant val)
 {
   SDObject *ret = new SDObject(name, "QVariant"_lit);
@@ -1580,9 +1580,9 @@ struct SDChunk : public SDObject
 #ifdef RENDERDOC_EXPORTS
     ret = malloc(sz);
     if(ret == NULL)
-      RENDERDOC_OutOfMemory(sz);
+      REDENDOC_OutOfMemory(sz);
 #else
-    ret = RENDERDOC_AllocArrayMem(sz);
+    ret = REDENDOC_AllocArrayMem(sz);
 #endif
     return ret;
   }
@@ -1591,7 +1591,7 @@ struct SDChunk : public SDObject
 #ifdef RENDERDOC_EXPORTS
     free(p);
 #else
-    RENDERDOC_FreeArrayMem(p);
+    REDENDOC_FreeArrayMem(p);
 #endif
   }
   void *operator new[](size_t count) = delete;
@@ -1722,9 +1722,9 @@ private:
 #ifdef RENDERDOC_EXPORTS
     ret = malloc(sz);
     if(ret == NULL)
-      RENDERDOC_OutOfMemory(sz);
+      REDENDOC_OutOfMemory(sz);
 #else
-    ret = RENDERDOC_AllocArrayMem(sz);
+    ret = REDENDOC_AllocArrayMem(sz);
 #endif
     return ret;
   }
@@ -1733,7 +1733,7 @@ private:
 #ifdef RENDERDOC_EXPORTS
     free(p);
 #else
-    RENDERDOC_FreeArrayMem(p);
+    REDENDOC_FreeArrayMem(p);
 #endif
   }
 

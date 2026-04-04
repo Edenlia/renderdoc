@@ -93,7 +93,7 @@ public:
   void finish()
   {
     std::string msg = this->str();
-    RENDERDOC_LogMessage(LogType::Comment, "EXTN", __FILE__, __LINE__, msg.c_str());
+    REDENDOC_LogMessage(LogType::Comment, "EXTN", __FILE__, __LINE__, msg.c_str());
     fputs(msg.c_str(), file);
   }
   virtual int sync() override
@@ -103,7 +103,7 @@ public:
     if(idx >= 0)
     {
       rdcstr msg = str.substr(0, idx + 1);
-      RENDERDOC_LogMessage(LogType::Comment, "EXTN", __FILE__, __LINE__, msg);
+      REDENDOC_LogMessage(LogType::Comment, "EXTN", __FILE__, __LINE__, msg);
       fputs(msg.c_str(), file);
       str = str.substr(idx + 1);
       this->str("");
@@ -163,7 +163,7 @@ void sharedLogOutput(QtMsgType type, const QMessageLogContext &context, const QS
     case QtFatalMsg: logtype = LogType::Fatal; break;
   }
 
-  RENDERDOC_LogMessage(logtype, "QTRD", context.file ? context.file : rdcstr(), context.line, msg);
+  REDENDOC_LogMessage(logtype, "QTRD", context.file ? context.file : rdcstr(), context.line, msg);
 }
 
 static QString tr(const char *string)
@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
     GlobalEnvironment env;
     env.enumerateGPUs = false;
     rdcarray<rdcstr> coreargs;
-    RENDERDOC_InitialiseReplay(env, coreargs);
+    REDENDOC_InitialiseReplay(env, coreargs);
 
     {
       QCoreApplication application(argc, mod_argv);
@@ -311,7 +311,7 @@ int main(int argc, char *argv[])
       PythonContext::GlobalShutdown();
     }
 
-    RENDERDOC_ShutdownReplay();
+    REDENDOC_ShutdownReplay();
 
     logbuf.finish();
 
@@ -388,7 +388,7 @@ int main(int argc, char *argv[])
 
   if(parser.isSet(versionOption))
   {
-    printf("QRedenDoc v%s (%s)\n", MAJOR_MINOR_VERSION_STRING, RENDERDOC_GetCommitHash());
+    printf("QRedenDoc v%s (%s)\n", MAJOR_MINOR_VERSION_STRING, REDENDOC_GetCommitHash());
 #if defined(DISTRIBUTION_VERSION)
     printf("Packaged for %s - %s\n", DISTRIBUTION_NAME, DISTRIBUTION_CONTACT);
 #endif
@@ -399,9 +399,9 @@ int main(int argc, char *argv[])
   {
     qInfo() << "Updating Vulkan layer registration";
     if(parser.value(installLayer) == lit("root"))
-      RENDERDOC_UpdateVulkanLayerRegistration(true);
+      REDENDOC_UpdateVulkanLayerRegistration(true);
     else
-      RENDERDOC_UpdateVulkanLayerRegistration(false);
+      REDENDOC_UpdateVulkanLayerRegistration(false);
     return 0;
   }
 
@@ -423,13 +423,13 @@ int main(int argc, char *argv[])
     // the renderdoccmd updater that runs us is from the old version, so older versions might be
     // running us as admin expecting the version number to be updated.
     // if we're not running as admin, this will immediately exit
-    RENDERDOC_UpdateInstalledVersionNumber();
+    REDENDOC_UpdateInstalledVersionNumber();
   }
 
   if(parser.isSet(updateDoneAdmin))
   {
     qInfo() << "Finishing update as admin";
-    RENDERDOC_UpdateInstalledVersionNumber();
+    REDENDOC_UpdateInstalledVersionNumber();
     return 0;
   }
 
@@ -459,7 +459,7 @@ int main(int argc, char *argv[])
     else
     {
       // no port specified, find the first open port.
-      ident = RENDERDOC_EnumerateRemoteTargets(host, ident);
+      ident = REDENDOC_EnumerateRemoteTargets(host, ident);
       ok = (ident != 0);
     }
 
@@ -603,7 +603,7 @@ int main(int argc, char *argv[])
       if(!crashReportPath.isEmpty())
         env.enumerateGPUs = false;
 
-      RENDERDOC_InitialiseReplay(env, coreargs);
+      REDENDOC_InitialiseReplay(env, coreargs);
     }
 
 #if defined(RENDERDOC_PLATFORM_LINUX) && !defined(RENDERDOC_WINDOWING_WAYLAND)
@@ -654,7 +654,7 @@ int main(int argc, char *argv[])
       ANALYTIC_SET(Metadata.Bitness, ((sizeof(void *) == sizeof(uint64_t)) ? 64 : 32));
       ANALYTIC_SET(Metadata.OSVersion, getOSVersion());
 
-#if RENDERDOC_STABLE_BUILD
+#if REDENDOC_STABLE_BUILD
       ANALYTIC_SET(Metadata.OfficialBuildRun, true);
 #else
       ANALYTIC_SET(Metadata.DevelBuildRun, true);
@@ -736,7 +736,7 @@ int main(int argc, char *argv[])
       config.Save();
     }
 
-    RENDERDOC_ShutdownReplay();
+    REDENDOC_ShutdownReplay();
 
     PythonContext::GlobalShutdown();
 

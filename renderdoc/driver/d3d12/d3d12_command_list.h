@@ -290,8 +290,8 @@ public:
 
   template <typename SerialiserType>
   bool Serialise_SetCommandAnnotation(SerialiserType &ser, rdcstr key,
-                                      RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                      RENDERDOC_AnnotationValue value);
+                                      REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                      REDENDOC_AnnotationValue value);
 
   //////////////////////////////
   // implement IUnknown

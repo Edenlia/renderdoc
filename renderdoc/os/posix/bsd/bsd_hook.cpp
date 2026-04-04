@@ -239,7 +239,7 @@ __attribute__((visibility("default"))) pid_t fork()
 
     pid_t ret = realfork();
     if(ret == 0)
-      direct_setenv(RENDERDOC_VULKAN_LAYER_VAR, "", true);
+      direct_setenv(REDENDOC_VULKAN_LAYER_VAR, "", true);
 
     return ret;
   }
@@ -316,7 +316,7 @@ __attribute__((visibility("default"))) pid_t fork()
   return ret;
 }
 
-#if defined(RENDERDOC_HOOK_DLSYM)
+#if defined(REDENDOC_HOOK_DLSYM)
 
 #pragma message("ALERT: dlsym() hooking enabled! This is unreliable & relies on glibc internals.")
 

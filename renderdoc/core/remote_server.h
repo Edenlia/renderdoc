@@ -65,16 +65,16 @@ public:
                                          const CaptureOptions &opts);
 
   virtual void CopyCaptureFromRemote(const rdcstr &remotepath, const rdcstr &localpath,
-                                     RENDERDOC_ProgressCallback progress);
+                                     REDENDOC_ProgressCallback progress);
 
-  virtual rdcstr CopyCaptureToRemote(const rdcstr &filename, RENDERDOC_ProgressCallback progress);
+  virtual rdcstr CopyCaptureToRemote(const rdcstr &filename, REDENDOC_ProgressCallback progress);
 
   virtual void TakeOwnershipCapture(const rdcstr &filename);
 
   virtual rdcpair<ResultDetails, IReplayController *> OpenCapture(uint32_t proxyid,
                                                                   const rdcstr &filename,
                                                                   const ReplayOptions &opts,
-                                                                  RENDERDOC_ProgressCallback progress);
+                                                                  REDENDOC_ProgressCallback progress);
 
   virtual void CloseCapture(IReplayController *rend);
 
@@ -96,7 +96,7 @@ public:
 
   virtual bool HasCallstacks();
 
-  virtual ResultDetails InitResolver(bool interactive, RENDERDOC_ProgressCallback progress);
+  virtual ResultDetails InitResolver(bool interactive, REDENDOC_ProgressCallback progress);
 
   virtual rdcarray<rdcstr> GetResolve(const rdcarray<uint64_t> &callstack);
 

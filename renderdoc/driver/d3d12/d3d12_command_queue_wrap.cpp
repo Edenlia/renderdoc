@@ -1555,9 +1555,9 @@ HRESULT STDMETHODCALLTYPE WrappedID3D12CommandQueue::Present(
 
 template <typename SerialiserType>
 bool WrappedID3D12CommandQueue::Serialise_SetQueueAnnotation(SerialiserType &ser, rdcstr key,
-                                                             RENDERDOC_AnnotationType valueType,
+                                                             REDENDOC_AnnotationType valueType,
                                                              uint32_t valueVectorWidth,
-                                                             RENDERDOC_AnnotationValue value)
+                                                             REDENDOC_AnnotationValue value)
 {
   ID3D12CommandQueue *pQueue = this;
   SERIALISE_ELEMENT(pQueue);
@@ -1578,7 +1578,7 @@ bool WrappedID3D12CommandQueue::Serialise_SetQueueAnnotation(SerialiserType &ser
 
       SDObject *root = m_Cmd.m_RootAnnotation;
 
-      if(valueType == eRENDERDOC_Empty)
+      if(valueType == eREDENDOC_Empty)
       {
         root->EraseChildByKeyPath(key);
       }
@@ -1622,5 +1622,5 @@ INSTANTIATE_FUNCTION_SERIALISED(void, WrappedID3D12CommandQueue, Wait, ID3D12Fen
                                 UINT64 Value);
 
 INSTANTIATE_FUNCTION_SERIALISED(void, WrappedID3D12CommandQueue, SetQueueAnnotation, rdcstr key,
-                                RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                RENDERDOC_AnnotationValue value);
+                                REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                REDENDOC_AnnotationValue value);

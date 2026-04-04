@@ -166,7 +166,7 @@ rdcstr GetReplayAppFilename()
   replay = path + "/";
 
 // if there's a custom lib subfolder, go up one (e.g. /usr/lib/renderdoc/librenderdoc.so)
-#if defined(RENDERDOC_LIB_SUBFOLDER)
+#if defined(REDENDOC_LIB_SUBFOLDER)
   replay += "../";
 #endif
 
@@ -221,7 +221,7 @@ void GetDefaultFiles(const rdcstr &logBaseName, rdcstr &capture_filename, rdcstr
 
   strcpy(temp_folder, GetTempRootPath().c_str());
 
-  rdcstr temp_override = Process::GetEnvVariable("RENDERDOC_TEMP");
+  rdcstr temp_override = Process::GetEnvVariable("REDENDOC_TEMP");
   if(!temp_override.empty() && temp_override[0] == '/')
   {
     strncpy(temp_folder, temp_override.c_str(), sizeof(temp_folder) - 1);
@@ -235,7 +235,7 @@ void GetDefaultFiles(const rdcstr &logBaseName, rdcstr &capture_filename, rdcstr
                         1900 + now.tm_year, now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min);
 
   // set by UI when launching programs so all logging goes to the same file
-  rdcstr logfile_override = Process::GetEnvVariable("RENDERDOC_DEBUG_LOG_FILE");
+  rdcstr logfile_override = Process::GetEnvVariable("REDENDOC_DEBUG_LOG_FILE");
   if(!logfile_override.empty())
     logging_filename = logfile_override;
   else

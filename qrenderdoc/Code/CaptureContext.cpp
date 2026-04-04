@@ -70,12 +70,12 @@
 
 CaptureContext::CaptureContext(PersistantConfig &cfg) : m_Config(cfg)
 {
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   m_CaptureLoaded = false;
   m_LoadInProgress = false;
 
-  RENDERDOC_RegisterMemoryRegion(this, sizeof(CaptureContext));
+  REDENDOC_RegisterMemoryRegion(this, sizeof(CaptureContext));
 
   memset(&m_APIProps, 0, sizeof(m_APIProps));
 
@@ -91,7 +91,7 @@ CaptureContext::CaptureContext(PersistantConfig &cfg) : m_Config(cfg)
 
   m_QtHelper = new MiniQtHelper(*this);
 
-  qApp->setApplicationVersion(QString::fromLatin1(RENDERDOC_GetVersionString()));
+  qApp->setApplicationVersion(QString::fromLatin1(REDENDOC_GetVersionString()));
 
   m_Icon = new QIcon();
   m_Icon->addFile(QStringLiteral(":/logo.svg"), QSize(), QIcon::Normal, QIcon::Off);
@@ -235,7 +235,7 @@ CaptureContext::CaptureContext(PersistantConfig &cfg) : m_Config(cfg)
 CaptureContext::~CaptureContext()
 {
   delete m_QtHelper;
-  RENDERDOC_UnregisterMemoryRegion(this);
+  REDENDOC_UnregisterMemoryRegion(this);
   delete m_Icon;
   m_Replay.CloseThread();
   delete m_MainWindow;
@@ -419,12 +419,12 @@ rdcarray<ExtensionMetadata> CaptureContext::GetInstalledExtensions()
                 int minor = match.captured(2).toInt(&ok);
 
                 // if it needs a higher major version, we can't load it
-                if(major > RENDERDOC_VERSION_MAJOR)
+                if(major > REDENDOC_VERSION_MAJOR)
                   badversion = true;
 
                 // if major versions are the same and it needs a higher minor, we can't load it
                 // either
-                if(major == RENDERDOC_VERSION_MAJOR && minor > RENDERDOC_VERSION_MINOR)
+                if(major == REDENDOC_VERSION_MAJOR && minor > REDENDOC_VERSION_MINOR)
                   badversion = true;
               }
             }
@@ -827,7 +827,7 @@ void CaptureContext::CleanMenu(QAction *action)
 void CaptureContext::LoadCapture(const rdcstr &captureFile, const ReplayOptions &opts,
                                  const rdcstr &origFilename, bool temporary, bool local)
 {
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   CloseCapture();
 
@@ -1241,7 +1241,7 @@ void CaptureContext::RecompressCapture()
   else
   {
     // for remote files we open a new short-lived handle on the temporary file
-    tempCap = cap = RENDERDOC_OpenCaptureFile();
+    tempCap = cap = REDENDOC_OpenCaptureFile();
     cap->OpenFile(tempFilename, "rdc", NULL);
   }
 
@@ -1491,7 +1491,7 @@ bool CaptureContext::ImportCapture(const CaptureFileFormat &fmt, const rdcstr &i
   float progress = 0.0f;
 
   LambdaThread *th = new LambdaThread([rdcfile, importfile, ext, &progress, &result]() {
-    ICaptureFile *file = RENDERDOC_OpenCaptureFile();
+    ICaptureFile *file = REDENDOC_OpenCaptureFile();
 
     result = file->OpenFile(importfile, ext.toUtf8().data(),
                             [&progress](float p) { progress = p * 0.5f; });
@@ -1550,7 +1550,7 @@ void CaptureContext::ExportCapture(const CaptureFileFormat &fmt, const rdcstr &e
 
   if(!file)
   {
-    local = file = RENDERDOC_OpenCaptureFile();
+    local = file = REDENDOC_OpenCaptureFile();
     result = file->OpenFile(m_CaptureFile, "rdc", NULL);
   }
 
@@ -1597,7 +1597,7 @@ void CaptureContext::ExportCapture(const CaptureFileFormat &fmt, const rdcstr &e
 void CaptureContext::SetEventID(const rdcarray<ICaptureViewer *> &exclude, uint32_t selectedEventID,
                                 uint32_t eventId, bool force)
 {
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   if(!IsCaptureLoaded())
     return;

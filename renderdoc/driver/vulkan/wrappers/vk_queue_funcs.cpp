@@ -897,7 +897,7 @@ void WrappedVulkan::InsertActionsAndRefreshIDs(BakedCmdBufferInfo &cmdBufInfo)
           const PendingAnnotation &annot = cmdBufInfo.annotations[curAnnot];
           if(annot.eventId == ev.eventId)
           {
-            if(annot.valueType == eRENDERDOC_Empty)
+            if(annot.valueType == eREDENDOC_Empty)
               localAnnotations->EraseChildByKeyPath(annot.key);
             else
               WriteAnnotation(localAnnotations->CreateChildByKeyPath(annot.key), annot.valueType,

@@ -237,9 +237,9 @@ void WrappedOpenGL::glObjectPtrLabel(const void *ptr, GLsizei length, const GLch
 
 template <typename SerialiserType>
 bool WrappedOpenGL::Serialise_SetCommandAnnotation(SerialiserType &ser, rdcstr key,
-                                                   RENDERDOC_AnnotationType valueType,
+                                                   REDENDOC_AnnotationType valueType,
                                                    uint32_t valueVectorWidth,
-                                                   RENDERDOC_AnnotationValue value)
+                                                   REDENDOC_AnnotationValue value)
 {
   SERIALISE_ELEMENT(key);
   SERIALISE_ELEMENT(valueType);
@@ -258,7 +258,7 @@ bool WrappedOpenGL::Serialise_SetCommandAnnotation(SerialiserType &ser, rdcstr k
 
       SDObject *root = m_RootAnnotation;
 
-      if(valueType == eRENDERDOC_Empty)
+      if(valueType == eREDENDOC_Empty)
       {
         root->EraseChildByKeyPath(key);
       }
@@ -275,9 +275,9 @@ bool WrappedOpenGL::Serialise_SetCommandAnnotation(SerialiserType &ser, rdcstr k
 }
 
 uint32_t WrappedOpenGL::SetCommandAnnotation(void *queueOrCommandBuffer, const char *key,
-                                             RENDERDOC_AnnotationType valueType,
+                                             REDENDOC_AnnotationType valueType,
                                              uint32_t valueVectorWidth,
-                                             const RENDERDOC_AnnotationValue *value)
+                                             const REDENDOC_AnnotationValue *value)
 {
   if(queueOrCommandBuffer != NULL)
     return 2;
@@ -292,11 +292,11 @@ uint32_t WrappedOpenGL::SetCommandAnnotation(void *queueOrCommandBuffer, const c
       GET_SERIALISER.SetActionChunk();
       SCOPED_SERIALISE_CHUNK(GLChunk::SetCommandAnnotation);
 
-      RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+      REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
-      if(valueType == eRENDERDOC_APIObject && val.apiObject)
+      if(valueType == eREDENDOC_APIObject && val.apiObject)
       {
-        RENDERDOC_GLResourceReference *reference = (RENDERDOC_GLResourceReference *)val.apiObject;
+        REDENDOC_GLResourceReference *reference = (REDENDOC_GLResourceReference *)val.apiObject;
         ResourceId id = GetResourceManager()->GetResID(
             GetResource((GLenum)reference->identifier, reference->name));
         RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(id), "ResourceId isn't 64-bit!");
@@ -315,22 +315,22 @@ uint32_t WrappedOpenGL::SetCommandAnnotation(void *queueOrCommandBuffer, const c
 }
 
 uint32_t WrappedOpenGL::SetObjectAnnotation(void *object, const char *key,
-                                            RENDERDOC_AnnotationType valueType,
+                                            REDENDOC_AnnotationType valueType,
                                             uint32_t valueVectorWidth,
-                                            const RENDERDOC_AnnotationValue *value)
+                                            const REDENDOC_AnnotationValue *value)
 {
-  RENDERDOC_GLResourceReference *reference = (RENDERDOC_GLResourceReference *)object;
+  REDENDOC_GLResourceReference *reference = (REDENDOC_GLResourceReference *)object;
   ResourceId id =
       GetResourceManager()->GetResID(GetResource((GLenum)reference->identifier, reference->name));
 
   if(id != ResourceId())
   {
-    RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+    REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
     // Convert API object references to ResourceId
-    if(valueType == eRENDERDOC_APIObject && val.apiObject)
+    if(valueType == eREDENDOC_APIObject && val.apiObject)
     {
-      reference = (RENDERDOC_GLResourceReference *)val.apiObject;
+      reference = (REDENDOC_GLResourceReference *)val.apiObject;
       ResourceId valId =
           GetResourceManager()->GetResID(GetResource((GLenum)reference->identifier, reference->name));
       RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(valId), "ResourceId isn't 64-bit!");
@@ -345,7 +345,7 @@ uint32_t WrappedOpenGL::SetObjectAnnotation(void *object, const char *key,
         root = m_Annotations[id] = new SDObject("Object Annotations"_lit, "Object Annotations"_lit);
     }
 
-    if(valueType == eRENDERDOC_Empty)
+    if(valueType == eREDENDOC_Empty)
     {
       root->EraseChildByKeyPath(key);
     }
@@ -726,5 +726,5 @@ INSTANTIATE_FUNCTION_SERIALISED(void, glPushDebugGroup, GLenum source, GLuint id
                                 const GLchar *message);
 INSTANTIATE_FUNCTION_SERIALISED(void, glPopDebugGroup);
 INSTANTIATE_FUNCTION_SERIALISED(void, SetCommandAnnotation, rdcstr key,
-                                RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                RENDERDOC_AnnotationValue value);
+                                REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                REDENDOC_AnnotationValue value);

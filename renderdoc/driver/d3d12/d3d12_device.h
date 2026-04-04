@@ -1134,11 +1134,11 @@ public:
   void StartFrameCapture(DeviceOwnedWindow devWnd);
   bool EndFrameCapture(DeviceOwnedWindow devWnd);
   bool DiscardFrameCapture(DeviceOwnedWindow devWnd);
-  uint32_t SetObjectAnnotation(void *object, const char *key, RENDERDOC_AnnotationType valueType,
-                               uint32_t valueVectorWidth, const RENDERDOC_AnnotationValue *value);
+  uint32_t SetObjectAnnotation(void *object, const char *key, REDENDOC_AnnotationType valueType,
+                               uint32_t valueVectorWidth, const REDENDOC_AnnotationValue *value);
   uint32_t SetCommandAnnotation(void *queueOrCommandBuffer, const char *key,
-                                RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                const RENDERDOC_AnnotationValue *value);
+                                REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                const REDENDOC_AnnotationValue *value);
 
   template <typename SerialiserType>
   bool Serialise_Present(SerialiserType &ser, ID3D12Resource *PresentedImage, UINT SyncInterval,

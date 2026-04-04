@@ -118,19 +118,19 @@
 #define RDOC_SIZET_SEP_TYPE OPTION_OFF
 #endif
 
-#if defined(RENDERDOC_WINDOWING_XLIB)
+#if defined(REDENDOC_WINDOWING_XLIB)
 #define RDOC_XLIB OPTION_ON
 #else
 #define RDOC_XLIB OPTION_OFF
 #endif
 
-#if defined(RENDERDOC_WINDOWING_XCB)
+#if defined(REDENDOC_WINDOWING_XCB)
 #define RDOC_XCB OPTION_ON
 #else
 #define RDOC_XCB OPTION_OFF
 #endif
 
-#if defined(RENDERDOC_WINDOWING_WAYLAND)
+#if defined(REDENDOC_WINDOWING_WAYLAND)
 #define RDOC_WAYLAND OPTION_ON
 #else
 #define RDOC_WAYLAND OPTION_OFF
@@ -150,13 +150,13 @@ enum
   RenderDoc_ForwardPortStride = 10,
 };
 
-#define RENDERDOC_VULKAN_LAYER_NAME "VK_LAYER_RENDERDOC_Capture"
-#define RENDERDOC_VULKAN_LAYER_VAR "ENABLE_VULKAN_RENDERDOC_CAPTURE"
+#define REDENDOC_VULKAN_LAYER_NAME "VK_LAYER_REDENDOC_Capture"
+#define REDENDOC_VULKAN_LAYER_VAR "ENABLE_VULKAN_REDENDOC_CAPTURE"
 
-#define RENDERDOC_ANDROID_LIBRARY "libVkLayer_GLES_RenderDoc.so"
+#define REDENDOC_ANDROID_LIBRARY "libVkLayer_GLES_RenderDoc.so"
 
 // This MUST match the package name in the build process that generates per-architecture packages
-#define RENDERDOC_ANDROID_PACKAGE_BASE "org.renderdoc.renderdoccmd"
+#define REDENDOC_ANDROID_PACKAGE_BASE "org.renderdoc.renderdoccmd"
 
 /////////////////////////////////////////////////
 // Debugging features configuration

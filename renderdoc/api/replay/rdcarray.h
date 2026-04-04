@@ -33,7 +33,7 @@
 
 #ifdef RENDERDOC_EXPORTS
 #include <stdlib.h>    // for malloc/free
-void RENDERDOC_OutOfMemory(uint64_t sz);
+void REDENDOC_OutOfMemory(uint64_t sz);
 #endif
 
 template <typename T, bool isStd = std::is_trivial<T>::value>
@@ -129,9 +129,9 @@ protected:
 #ifdef RENDERDOC_EXPORTS
     ret = (T *)malloc(count * sizeof(T));
     if(ret == NULL)
-      RENDERDOC_OutOfMemory(count * sizeof(T));
+      REDENDOC_OutOfMemory(count * sizeof(T));
 #else
-    ret = (T *)RENDERDOC_AllocArrayMem(count * sizeof(T));
+    ret = (T *)REDENDOC_AllocArrayMem(count * sizeof(T));
 #endif
     return ret;
   }
@@ -140,7 +140,7 @@ protected:
 #ifdef RENDERDOC_EXPORTS
     free((void *)p);
 #else
-    RENDERDOC_FreeArrayMem((void *)p);
+    REDENDOC_FreeArrayMem((void *)p);
 #endif
   }
 
@@ -816,7 +816,7 @@ public:
     ItemCopyHelper<T>::copyRange(elems, in, usedCount);
   }
 
-#if defined(RENDERDOC_QT_COMPAT)
+#if defined(REDENDOC_QT_COMPAT)
   rdcarray(const QList<T> &in)
   {
     elems = NULL;
@@ -978,7 +978,7 @@ struct bytebuf : public rdcarray<byte>
   bytebuf() : rdcarray<byte>() {}
   bytebuf(const std::initializer_list<byte> &in) : rdcarray<byte>(in) {}
   bytebuf(const byte *in, size_t size) : rdcarray<byte>(in, size) {}
-#if defined(RENDERDOC_QT_COMPAT)
+#if defined(REDENDOC_QT_COMPAT)
   bytebuf(const QByteArray &in)
   {
     resize(in.size());

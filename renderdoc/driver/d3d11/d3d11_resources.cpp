@@ -69,8 +69,8 @@ Threading::CriticalSection WrappedShader::m_ShaderListLock;
 rdcarray<WrappedID3DDeviceContextState *> WrappedID3DDeviceContextState::m_List;
 Threading::CriticalSection WrappedID3DDeviceContextState::m_Lock;
 
-const GUID RENDERDOC_ID3D11ShaderGUID_ShaderDebugMagicValue = RENDERDOC_ShaderDebugMagicValue_struct;
-const GUID RENDERDOC_DeleteSelf = {
+const GUID REDENDOC_ID3D11ShaderGUID_ShaderDebugMagicValue = RENDERDOC_ShaderDebugMagicValue_struct;
+const GUID REDENDOC_DeleteSelf = {
     0x1e4bf855,
     0xcc83,
     0x4b7a,

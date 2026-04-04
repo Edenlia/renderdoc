@@ -1345,7 +1345,7 @@ The default is :data:`ReplayOptimisationLevel.Balanced`.
   ReplayOptimisationLevel optimisation = ReplayOptimisationLevel::Balanced;
 
 // helpers for Qt, define constructor and cast. These will be defined in Qt code
-#if defined(RENDERDOC_QT_COMPAT)
+#if defined(REDENDOC_QT_COMPAT)
   ReplayOptions(const QVariant &var);
   operator QVariant() const;
 #endif
@@ -1557,6 +1557,6 @@ DECLARE_REFLECTION_STRUCT(ExecuteResult);
 // there's not a good way to document a callback, so for lack of a better place we declare these
 // here and document them in the main IReplayController. They can be linked to from anywhere by
 // name.
-typedef std::function<bool()> RENDERDOC_KillCallback;
-typedef std::function<void(float)> RENDERDOC_ProgressCallback;
-typedef std::function<WindowingData(bool, const rdcarray<WindowingSystem> &)> RENDERDOC_PreviewWindowCallback;
+typedef std::function<bool()> REDENDOC_KillCallback;
+typedef std::function<void(float)> REDENDOC_ProgressCallback;
+typedef std::function<WindowingData(bool, const rdcarray<WindowingSystem> &)> REDENDOC_PreviewWindowCallback;

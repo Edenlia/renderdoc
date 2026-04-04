@@ -2713,9 +2713,9 @@ ResourceId WrappedVulkan::GetIDForUserObject(void *object)
   {
     // the object was wrapped between us and the application. We'll assume it's pointer-ish and look
     // at its dispatch table. If this crashes, not much we can do
-    void *dispatchTable = RENDERDOC_DEVICEPOINTER_FROM_VKINSTANCE(object);
+    void *dispatchTable = REDENDOC_DEVICEPOINTER_FROM_VKINSTANCE(object);
 
-    if(dispatchTable == RENDERDOC_DEVICEPOINTER_FROM_VKINSTANCE(m_Instance))
+    if(dispatchTable == REDENDOC_DEVICEPOINTER_FROM_VKINSTANCE(m_Instance))
     {
       // instance or physical device - they share a dispatch table
 
@@ -2738,7 +2738,7 @@ ResourceId WrappedVulkan::GetIDForUserObject(void *object)
         }
       }
     }
-    else if(dispatchTable == RENDERDOC_DEVICEPOINTER_FROM_VKINSTANCE(m_Device))
+    else if(dispatchTable == REDENDOC_DEVICEPOINTER_FROM_VKINSTANCE(m_Device))
     {
       // device, queue, or command buffer - they would share a dispatch table
 
@@ -2767,17 +2767,17 @@ ResourceId WrappedVulkan::GetIDForUserObject(void *object)
 }
 
 uint32_t WrappedVulkan::SetObjectAnnotation(void *object, const char *key,
-                                            RENDERDOC_AnnotationType valueType,
+                                            REDENDOC_AnnotationType valueType,
                                             uint32_t valueVectorWidth,
-                                            const RENDERDOC_AnnotationValue *value)
+                                            const REDENDOC_AnnotationValue *value)
 {
   ResourceId id = GetIDForUserObject(object);
 
   if(id != ResourceId())
   {
-    RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+    REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
-    if(valueType == eRENDERDOC_APIObject)
+    if(valueType == eREDENDOC_APIObject)
     {
       ResourceId valId = GetIDForUserObject(val.apiObject);
       RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(valId), "ResourceId isn't 64-bit!");
@@ -2792,7 +2792,7 @@ uint32_t WrappedVulkan::SetObjectAnnotation(void *object, const char *key,
         root = m_Annotations[id] = new SDObject("Object Annotations"_lit, "Object Annotations"_lit);
     }
 
-    if(valueType == eRENDERDOC_Empty)
+    if(valueType == eREDENDOC_Empty)
     {
       root->EraseChildByKeyPath(key);
     }
@@ -2809,9 +2809,9 @@ uint32_t WrappedVulkan::SetObjectAnnotation(void *object, const char *key,
 
 template <typename SerialiserType>
 bool WrappedVulkan::Serialise_SetQueueAnnotation(SerialiserType &ser, VkQueue queue, rdcstr key,
-                                                 RENDERDOC_AnnotationType valueType,
+                                                 REDENDOC_AnnotationType valueType,
                                                  uint32_t valueVectorWidth,
-                                                 RENDERDOC_AnnotationValue value)
+                                                 REDENDOC_AnnotationValue value)
 {
   SERIALISE_ELEMENT(queue);
   SERIALISE_ELEMENT(key);
@@ -2831,7 +2831,7 @@ bool WrappedVulkan::Serialise_SetQueueAnnotation(SerialiserType &ser, VkQueue qu
 
       SDObject *root = m_RootAnnotation;
 
-      if(valueType == eRENDERDOC_Empty)
+      if(valueType == eREDENDOC_Empty)
       {
         root->EraseChildByKeyPath(key);
       }
@@ -2849,9 +2849,9 @@ bool WrappedVulkan::Serialise_SetQueueAnnotation(SerialiserType &ser, VkQueue qu
 
 template <typename SerialiserType>
 bool WrappedVulkan::Serialise_SetCommandAnnotation(SerialiserType &ser, VkCommandBuffer cmd,
-                                                   rdcstr key, RENDERDOC_AnnotationType valueType,
+                                                   rdcstr key, REDENDOC_AnnotationType valueType,
                                                    uint32_t valueVectorWidth,
-                                                   RENDERDOC_AnnotationValue value)
+                                                   REDENDOC_AnnotationValue value)
 {
   SERIALISE_ELEMENT(cmd);
   SERIALISE_ELEMENT(key);
@@ -2884,9 +2884,9 @@ bool WrappedVulkan::Serialise_SetCommandAnnotation(SerialiserType &ser, VkComman
 }
 
 uint32_t WrappedVulkan::SetCommandAnnotation(void *queueOrCommandBuffer, const char *key,
-                                             RENDERDOC_AnnotationType valueType,
+                                             REDENDOC_AnnotationType valueType,
                                              uint32_t valueVectorWidth,
-                                             const RENDERDOC_AnnotationValue *value)
+                                             const REDENDOC_AnnotationValue *value)
 {
   if(WrappedVkQueue::IsAlloc(queueOrCommandBuffer))
   {
@@ -2898,9 +2898,9 @@ uint32_t WrappedVulkan::SetCommandAnnotation(void *queueOrCommandBuffer, const c
       ser.SetActionChunk();
       SCOPED_SERIALISE_CHUNK(VulkanChunk::SetQueueAnnotation);
 
-      RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+      REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
-      if(valueType == eRENDERDOC_APIObject)
+      if(valueType == eREDENDOC_APIObject)
       {
         ResourceId id = GetIDForUserObject(val.apiObject);
         RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(id), "ResourceId isn't 64-bit!");
@@ -2925,9 +2925,9 @@ uint32_t WrappedVulkan::SetCommandAnnotation(void *queueOrCommandBuffer, const c
       ser.SetActionChunk();
       SCOPED_SERIALISE_CHUNK(VulkanChunk::SetCommandAnnotation);
 
-      RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+      REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
-      if(valueType == eRENDERDOC_APIObject)
+      if(valueType == eREDENDOC_APIObject)
       {
         ResourceId id = GetIDForUserObject(val.apiObject);
         RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(id), "ResourceId isn't 64-bit!");
@@ -3237,7 +3237,7 @@ VkResult WrappedVulkan::vkSetDebugUtilsObjectTagEXT(VkDevice device,
     {
       m_CurrentVRBackbuffer = data.record->GetResourceID();
     }
-    else if(pTagInfo->tagName == RENDERDOC_DescriptorsReservation_UUID &&
+    else if(pTagInfo->tagName == REDENDOC_DescriptorsReservation_UUID &&
             pTagInfo->objectType == VK_OBJECT_TYPE_INSTANCE)
     {
       m_InitParams.DescriptorsReserved = true;
@@ -3410,9 +3410,9 @@ INSTANTIATE_FUNCTION_SERIALISED(VkResult, vkResetQueryPool, VkDevice device, VkQ
                                 uint32_t firstQuery, uint32_t queryCount);
 
 INSTANTIATE_FUNCTION_SERIALISED(void, SetCommandAnnotation, VkCommandBuffer cmd, rdcstr key,
-                                RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                RENDERDOC_AnnotationValue value);
+                                REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                REDENDOC_AnnotationValue value);
 
 INSTANTIATE_FUNCTION_SERIALISED(void, SetQueueAnnotation, VkQueue queue, rdcstr key,
-                                RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                RENDERDOC_AnnotationValue value);
+                                REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                REDENDOC_AnnotationValue value);

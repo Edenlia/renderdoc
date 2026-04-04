@@ -4467,7 +4467,7 @@ rdcarray<GLVersion> GetReplayVersions(RDCDriver api)
   }
 }
 
-#if defined(RENDERDOC_SUPPORT_GLES)
+#if defined(REDENDOC_SUPPORT_GLES)
 
 RDResult GLES_CreateReplayDevice(RDCFile *rdc, const ReplayOptions &opts, IReplayDriver **driver)
 {
@@ -4490,7 +4490,7 @@ RDResult GLES_CreateReplayDevice(RDCFile *rdc, const ReplayOptions &opts, IRepla
     return CreateReplayDevice(rdc ? rdc->GetDriver() : RDCDriver::OpenGLES, rdc, opts,
                               GetEGLPlatform(), driver);
   }
-#if defined(RENDERDOC_SUPPORT_GL)
+#if defined(REDENDOC_SUPPORT_GL)
   else if(GetGLPlatform().CanCreateGLESContext())
   {
     RDCLOG("libEGL is not available, falling back to EXT_create_context_es2_profile");
@@ -4521,7 +4521,7 @@ static DriverRegistration GLESDriverRegistration(RDCDriver::OpenGLES, &GLES_Crea
 
 #endif
 
-#if defined(RENDERDOC_SUPPORT_GL)
+#if defined(REDENDOC_SUPPORT_GL)
 
 RDResult GL_CreateReplayDevice(RDCFile *rdc, const ReplayOptions &opts, IReplayDriver **driver)
 {
@@ -4529,7 +4529,7 @@ RDResult GL_CreateReplayDevice(RDCFile *rdc, const ReplayOptions &opts, IReplayD
 
   if(RenderDoc::Inst().GetGlobalEnvironment().waylandDisplay)
   {
-#if defined(RENDERDOC_SUPPORT_EGL)
+#if defined(REDENDOC_SUPPORT_EGL)
     RDCLOG("Forcing EGL device creation for wayland");
     gl_platform = &GetEGLPlatform();
 #else
@@ -4540,7 +4540,7 @@ RDResult GL_CreateReplayDevice(RDCFile *rdc, const ReplayOptions &opts, IReplayD
 
   bool can_create_gl_context = gl_platform->CanCreateGLContext();
 
-#if defined(RENDERDOC_SUPPORT_EGL)
+#if defined(REDENDOC_SUPPORT_EGL)
   if(!can_create_gl_context && gl_platform == &GetGLPlatform())
   {
     RDCLOG("Cannot create GL context with GL platform, falling back to EGL");

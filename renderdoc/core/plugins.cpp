@@ -36,8 +36,8 @@ rdcstr LocatePluginFile(const rdcstr &path, const rdcstr &fileName)
 
   rdcarray<rdcstr> paths;
 
-#if defined(RENDERDOC_PLUGINS_PATH)
-  string customPath(RENDERDOC_PLUGINS_PATH);
+#if defined(REDENDOC_PLUGINS_PATH)
+  string customPath(REDENDOC_PLUGINS_PATH);
 
   if(FileIO::IsRelativePath(customPath))
     customPath = libpath + "/" + customPath;

@@ -435,7 +435,7 @@ class Win32CallstackResolver : public Callstack::StackResolver
 {
 public:
   Win32CallstackResolver(bool interactive, byte *moduleDB, size_t DBSize,
-                         RENDERDOC_ProgressCallback progress);
+                         REDENDOC_ProgressCallback progress);
   ~Win32CallstackResolver();
 
   Callstack::AddressDetails GetAddr(uint64_t addr);
@@ -740,7 +740,7 @@ rdcstr Win32CallstackResolver::pdbBrowse(rdcstr startingPoint)
 }
 
 Win32CallstackResolver::Win32CallstackResolver(bool interactive, byte *moduleDB, size_t DBSize,
-                                               RENDERDOC_ProgressCallback progress)
+                                               REDENDOC_ProgressCallback progress)
 {
   if(Win32_Callstacks_MSDIAPath() == UNINITIALISED_VAR)
   {
@@ -1042,7 +1042,7 @@ Win32CallstackResolver::Win32CallstackResolver(bool interactive, byte *moduleDB,
   RenderDoc::Inst().SetConfigSetting("Win32.Callstacks.MSDIAPath")->data.str =
       StringFormat::Wide2UTF8(DIA2::msdiapath);
 
-  RENDERDOC_SaveConfigSettings();
+  REDENDOC_SaveConfigSettings();
 }
 
 Win32CallstackResolver::~Win32CallstackResolver()
@@ -1128,7 +1128,7 @@ Stackwalk *Create()
 }
 
 StackResolver *MakeResolver(bool interactive, byte *moduleDB, size_t DBSize,
-                            RENDERDOC_ProgressCallback progress)
+                            REDENDOC_ProgressCallback progress)
 {
   if(DBSize < 8 || memcmp(moduleDB, "WN32CALL", 8) != 0)
   {

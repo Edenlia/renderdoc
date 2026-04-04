@@ -251,7 +251,7 @@ private:
       while(*cur)
       {
         // if it is NOT the vulkan env var, append it to our block
-        if(wcsncmp(cur, CONCAT(L, RENDERDOC_VULKAN_LAYER_VAR), sizeof(RENDERDOC_VULKAN_LAYER_VAR) - 1))
+        if(wcsncmp(cur, CONCAT(L, REDENDOC_VULKAN_LAYER_VAR), sizeof(REDENDOC_VULKAN_LAYER_VAR) - 1))
         {
           envW += cur;
           envW.push_back(L'\0');
@@ -274,7 +274,7 @@ private:
       while(*cur)
       {
         // if it is NOT the vulkan env var, append it to our block
-        if(strncmp(cur, RENDERDOC_VULKAN_LAYER_VAR, sizeof(RENDERDOC_VULKAN_LAYER_VAR) - 1))
+        if(strncmp(cur, REDENDOC_VULKAN_LAYER_VAR, sizeof(REDENDOC_VULKAN_LAYER_VAR) - 1))
         {
           envA += cur;
           envA.push_back('\0');

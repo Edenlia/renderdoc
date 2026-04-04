@@ -325,7 +325,7 @@ static bool MergeConfigValues(const rdcstr &prefix, SDObject *dstConfig, const S
           RDCLOG("%s has been customised from %s to %s", (prefix + dstChild->name).c_str(),
                  oldVal.c_str(), newVal.c_str());
 
-#if RENDERDOC_STABLE_BUILD
+#if REDENDOC_STABLE_BUILD
           if(rdcstr(dstDesc->data.str).contains(debugOnlyString))
           {
             RDCWARN("%s customisation will not apply - read only in this build",

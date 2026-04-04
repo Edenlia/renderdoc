@@ -281,7 +281,7 @@ endif()
 if(BUILD_VERSION_STABLE)
     file(APPEND
          ${CMAKE_BINARY_DIR}/qrenderdoc/qrenderdoc_cmake.pri
-         "DEFINES+=RENDERDOC_STABLE_BUILD=1\n")
+         "DEFINES+=REDENDOC_STABLE_BUILD=1\n")
 endif()
 
 if(NOT BUILD_VERSION_DIST_NAME STREQUAL "")

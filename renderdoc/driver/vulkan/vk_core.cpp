@@ -395,7 +395,7 @@ void WrappedVulkan::AddFreeCommandBuffer(VkCommandBuffer cmd)
 void WrappedVulkan::SubmitCmds(VkSemaphore *unwrappedWaitSemaphores,
                                VkPipelineStageFlags *waitStageMask, uint32_t waitSemaphoreCount)
 {
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
   if(HasFatalError())
     return;
 
@@ -477,7 +477,7 @@ void WrappedVulkan::SubmitSemaphores()
 
 void WrappedVulkan::FlushQ()
 {
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   if(HasFatalError())
     return;
@@ -4148,7 +4148,7 @@ RDResult WrappedVulkan::ContextReplayLog(CaptureState readType, uint32_t startEv
 
 void WrappedVulkan::ApplyInitialContents()
 {
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
   if(HasFatalError())
     return;
 
@@ -4936,11 +4936,11 @@ bool WrappedVulkan::ProcessChunk(ReadSerialiser &ser, VulkanChunk chunk)
       return Serialise_vkCmdBeginCustomResolveEXT(ser, VK_NULL_HANDLE, NULL);
 
     case VulkanChunk::SetQueueAnnotation:
-      return Serialise_SetQueueAnnotation(ser, VK_NULL_HANDLE, rdcstr(), eRENDERDOC_AnnotationMax,
-                                          0, RENDERDOC_AnnotationValue());
+      return Serialise_SetQueueAnnotation(ser, VK_NULL_HANDLE, rdcstr(), eREDENDOC_AnnotationMax,
+                                          0, REDENDOC_AnnotationValue());
     case VulkanChunk::SetCommandAnnotation:
-      return Serialise_SetCommandAnnotation(ser, VK_NULL_HANDLE, rdcstr(), eRENDERDOC_AnnotationMax,
-                                            0, RENDERDOC_AnnotationValue());
+      return Serialise_SetCommandAnnotation(ser, VK_NULL_HANDLE, rdcstr(), eREDENDOC_AnnotationMax,
+                                            0, REDENDOC_AnnotationValue());
 
     // chunks that are reserved but not yet serialised
     case VulkanChunk::vkResetCommandPool:

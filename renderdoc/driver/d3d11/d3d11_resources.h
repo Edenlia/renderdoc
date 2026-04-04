@@ -75,8 +75,8 @@ bool CanQuery(base *b)
   return SUCCEEDED(check) && d != NULL;
 }
 
-extern const GUID RENDERDOC_ID3D11ShaderGUID_ShaderDebugMagicValue;
-extern const GUID RENDERDOC_DeleteSelf;
+extern const GUID REDENDOC_ID3D11ShaderGUID_ShaderDebugMagicValue;
+extern const GUID REDENDOC_DeleteSelf;
 
 template <typename NestedType, typename NestedType1 = NestedType, typename NestedType2 = NestedType1>
 class WrappedDeviceChild11 : public NestedType2
@@ -358,10 +358,10 @@ public:
       /* [annotation] */
       __in_bcount_opt(DataSize) const void *pData)
   {
-    if(guid == RENDERDOC_ID3D11ShaderGUID_ShaderDebugMagicValue)
+    if(guid == REDENDOC_ID3D11ShaderGUID_ShaderDebugMagicValue)
       return m_pDevice->SetShaderDebugPath(this, (const char *)pData);
 
-    if(guid == RENDERDOC_DeleteSelf)
+    if(guid == REDENDOC_DeleteSelf)
     {
       delete this;
       return S_OK;

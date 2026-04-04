@@ -371,7 +371,7 @@ void PythonContext::GlobalInit()
   }
 #endif
 
-#if RENDERDOC_STABLE_BUILD == 0
+#if REDENDOC_STABLE_BUILD == 0
   // if we're running in the git checkout and we can find the test scripts, add that location to the
   // path
   {
@@ -1347,7 +1347,7 @@ PyObject *PythonContext::outstream_write(PyObject *self, PyObject *args)
       }
 
       if(!message.empty())
-        RENDERDOC_LogMessage(redirector->isStdError ? LogType::Warning : LogType::Comment, "EXTN",
+        REDENDOC_LogMessage(redirector->isStdError ? LogType::Warning : LogType::Comment, "EXTN",
                              filename, line, message);
     }
   }
@@ -1502,7 +1502,7 @@ extern "C" void HandleException(PyObject *global_handle)
       linenum = PyFrame_GetLineNumber(frame);
     }
 
-    RENDERDOC_LogMessage(LogType::Error, "EXTN", filename, linenum, exString);
+    REDENDOC_LogMessage(LogType::Error, "EXTN", filename, linenum, exString);
   }
 }
 

@@ -134,7 +134,7 @@ void GetLibraryFilename(rdcstr &selfName)
 
     ::fclose(f);
 
-    char *c = strstr(map_string, "/" RENDERDOC_ANDROID_LIBRARY);
+    char *c = strstr(map_string, "/" REDENDOC_ANDROID_LIBRARY);
 
     if(c)
     {
@@ -202,7 +202,7 @@ void GetLibraryFilename(rdcstr &selfName)
 
   if(librenderdoc_path.empty())
   {
-    RDCWARN("Couldn't get " RENDERDOC_ANDROID_LIBRARY
+    RDCWARN("Couldn't get " REDENDOC_ANDROID_LIBRARY
             " path from /proc/self/maps, falling back to dladdr");
 
     Dl_info info;

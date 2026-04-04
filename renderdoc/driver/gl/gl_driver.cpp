@@ -2087,7 +2087,7 @@ void WrappedOpenGL::SwapBuffers(WindowingSystem winSystem, void *windowHandle)
   {
     uint32_t overlay = RenderDoc::Inst().GetOverlayBits();
 
-    if(overlay & eRENDERDOC_Overlay_Enabled)
+    if(overlay & eREDENDOC_Overlay_Enabled)
     {
       int flags = 0;
       // capturing is disabled if unsupported functions have been used, or this context is legacy
@@ -2506,7 +2506,7 @@ bool WrappedOpenGL::EndFrameCapture(DeviceOwnedWindow devWnd)
 
     m_Failures++;
 
-    if((RenderDoc::Inst().GetOverlayBits() & eRENDERDOC_Overlay_Enabled))
+    if((RenderDoc::Inst().GetOverlayBits() & eREDENDOC_Overlay_Enabled))
     {
       ContextData &ctxdata = GetCtxData();
 
@@ -4793,8 +4793,8 @@ bool WrappedOpenGL::ProcessChunk(ReadSerialiser &ser, GLChunk chunk)
     }
 
     case GLChunk::SetCommandAnnotation:
-      return Serialise_SetCommandAnnotation(ser, rdcstr(), eRENDERDOC_AnnotationMax, 0,
-                                            RENDERDOC_AnnotationValue());
+      return Serialise_SetCommandAnnotation(ser, rdcstr(), eREDENDOC_AnnotationMax, 0,
+                                            REDENDOC_AnnotationValue());
 
     case GLChunk::ContextConfiguration: return Serialise_ContextConfiguration(ser, NULL);
 
@@ -5864,7 +5864,7 @@ void WrappedOpenGL::ReplayLog(uint32_t startEventID, uint32_t endEventID, Replay
 
   if(!partial)
   {
-    RENDERDOC_PROFILEREGION("ApplyInitialContents");
+    REDENDOC_PROFILEREGION("ApplyInitialContents");
     GLMarkerRegion apply("!!!!RenderDoc Internal: ApplyInitialContents");
     GetResourceManager()->ApplyInitialContents();
 

@@ -212,7 +212,7 @@ extern "C" __declspec(dllexport) void __cdecl INTERNAL_SetCaptureFile(const char
 
 extern "C" __declspec(dllexport) void __cdecl INTERNAL_SetDebugLogFile(const char *logfile)
 {
-  RENDERDOC_SetDebugLogFile(logfile ? logfile : rdcstr());
+  REDENDOC_SetDebugLogFile(logfile ? logfile : rdcstr());
 }
 
 static EnvironmentModification tempEnvMod;
@@ -1302,7 +1302,7 @@ rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
     if(!retValue)
     {
       RDResult result;
-#if RENDERDOC_OFFICIAL_BUILD
+#if REDENDOC_OFFICIAL_BUILD
       SET_ERROR_RESULT(result, ResultCode::InternalError,
                        "Can't run 32-bit renderdoccmd to capture 32-bit program.");
 #else

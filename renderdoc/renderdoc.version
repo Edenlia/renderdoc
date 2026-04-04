@@ -17,7 +17,7 @@
                 execve;
                 execvpe;
                 _exit;
-                RENDERDOC_*;
+                REDENDOC_*;
                 VK_LAYER_RENDERDOC_*;
         local:
                 *;

@@ -1107,7 +1107,7 @@ private:
   Threading::CriticalSection m_ImageStatesLock;
 
   // find swapchain for an image
-  std::map<RENDERDOC_WindowHandle, VkSwapchainKHR> m_SwapLookup;
+  std::map<REDENDOC_WindowHandle, VkSwapchainKHR> m_SwapLookup;
   Threading::CriticalSection m_SwapLookupLock;
 
   // below are replay-side data only, doesn't have to be thread protected
@@ -1216,19 +1216,19 @@ private:
   bool DiscardFrameCapture(DeviceOwnedWindow devWnd);
 
   ResourceId GetIDForUserObject(void *object);
-  uint32_t SetObjectAnnotation(void *object, const char *key, RENDERDOC_AnnotationType valueType,
-                               uint32_t valueVectorWidth, const RENDERDOC_AnnotationValue *value);
+  uint32_t SetObjectAnnotation(void *object, const char *key, REDENDOC_AnnotationType valueType,
+                               uint32_t valueVectorWidth, const REDENDOC_AnnotationValue *value);
   template <typename SerialiserType>
   bool Serialise_SetCommandAnnotation(SerialiserType &ser, VkCommandBuffer cmd, rdcstr key,
-                                      RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                      RENDERDOC_AnnotationValue value);
+                                      REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                      REDENDOC_AnnotationValue value);
   template <typename SerialiserType>
   bool Serialise_SetQueueAnnotation(SerialiserType &ser, VkQueue queue, rdcstr key,
-                                    RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                    RENDERDOC_AnnotationValue value);
+                                    REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                    REDENDOC_AnnotationValue value);
   uint32_t SetCommandAnnotation(void *queueOrCommandBuffer, const char *key,
-                                RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                const RENDERDOC_AnnotationValue *value);
+                                REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                const REDENDOC_AnnotationValue *value);
 
   void AdvanceFrame();
   void Present(DeviceOwnedWindow devWnd);

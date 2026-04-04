@@ -208,7 +208,7 @@ struct RemoteExecution
     return CONCAT(Proxied_, name)(m_Writer, m_Reader, ##__VA_ARGS__);
 
 ReplayProxy::ReplayProxy(ReadSerialiser &reader, WriteSerialiser &writer, IRemoteDriver *remoteDriver,
-                         IReplayDriver *replayDriver, RENDERDOC_PreviewWindowCallback previewWindow)
+                         IReplayDriver *replayDriver, REDENDOC_PreviewWindowCallback previewWindow)
     : m_Reader(reader),
       m_Writer(writer),
       m_Proxy(NULL),

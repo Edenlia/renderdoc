@@ -231,7 +231,7 @@ void RenderDoc::TargetControlClientThread(uint32_t version, Network::Socket *cli
 
       bytebuf buf;
 
-      ICaptureFile *file = RENDERDOC_OpenCaptureFile();
+      ICaptureFile *file = REDENDOC_OpenCaptureFile();
       if(file->OpenFile(captures.back().path, "rdc", NULL).OK())
       {
         buf = file->GetThumbnail(FileType::JPG, 0).data;
@@ -419,7 +419,7 @@ void RenderDoc::TargetControlClientThread(uint32_t version, Network::Socket *cli
     }
   }
 
-  RenderDoc::Inst().SetProgressCallback<CaptureProgress>(RENDERDOC_ProgressCallback());
+  RenderDoc::Inst().SetProgressCallback<CaptureProgress>(REDENDOC_ProgressCallback());
 
   // give up our connection
   {
@@ -721,7 +721,7 @@ public:
       SAFE_DELETE(m_Socket);
   }
 
-  TargetControlMessage ReceiveMessage(RENDERDOC_ProgressCallback progress)
+  TargetControlMessage ReceiveMessage(REDENDOC_ProgressCallback progress)
   {
     TargetControlMessage msg;
     if(m_Socket == NULL)
@@ -961,7 +961,7 @@ private:
   std::map<uint32_t, rdcstr> m_CaptureCopies;
 };
 
-extern "C" RENDERDOC_API ITargetControl *RENDERDOC_CC RENDERDOC_CreateTargetControl(
+extern "C" RENDERDOC_API ITargetControl *RENDERDOC_CC REDENDOC_CreateTargetControl(
     const rdcstr &URL, uint32_t ident, const rdcstr &clientName, bool forceConnection)
 {
   rdcstr host = "localhost";

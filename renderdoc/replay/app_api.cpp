@@ -24,19 +24,19 @@
 
 #include <string.h>
 #include "api/app/renderdoc_app.h"
-#include "api/replay/apidefs.h"    // for RENDERDOC_API to export the RENDERDOC_GetAPI function
+#include "api/replay/apidefs.h"    // for RENDERDOC_API to export the REDENDOC_GetAPI function
 #include "common/common.h"
 #include "common/formatting.h"
 #include "core/core.h"
 #include "hooks/hooks.h"
 #include "serialise/rdcfile.h"
 
-static void SetFocusToggleKeys(RENDERDOC_InputButton *keys, int num)
+static void SetFocusToggleKeys(REDENDOC_InputButton *keys, int num)
 {
   RenderDoc::Inst().SetFocusKeys(keys, num);
 }
 
-static void SetCaptureKeys(RENDERDOC_InputButton *keys, int num)
+static void SetCaptureKeys(REDENDOC_InputButton *keys, int num)
 {
   RenderDoc::Inst().SetCaptureKeys(keys, num);
 }
@@ -252,8 +252,8 @@ static uint32_t ShowReplayUI()
 }
 
 static uint32_t SetObjectAnnotation(void *device, void *object, const char *key,
-                                    RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                    const RENDERDOC_AnnotationValue *value)
+                                    REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                    const REDENDOC_AnnotationValue *value)
 {
   if(object == NULL)
   {
@@ -261,15 +261,15 @@ static uint32_t SetObjectAnnotation(void *device, void *object, const char *key,
     return 3;
   }
 
-  if((valueType == eRENDERDOC_Empty && value != NULL) ||
-     (valueType != eRENDERDOC_Empty && value == NULL))
+  if((valueType == eREDENDOC_Empty && value != NULL) ||
+     (valueType != eREDENDOC_Empty && value == NULL))
   {
     RDCWARN("Invalid annotation - value should be NULL and type should be empty");
     return 3;
   }
 
-  if((valueType == eRENDERDOC_Empty || valueType == eRENDERDOC_String ||
-      valueType == eRENDERDOC_APIObject) &&
+  if((valueType == eREDENDOC_Empty || valueType == eREDENDOC_String ||
+      valueType == eREDENDOC_APIObject) &&
      valueVectorWidth != 0)
   {
     RDCWARN(
@@ -295,11 +295,11 @@ static uint32_t SetObjectAnnotation(void *device, void *object, const char *key,
 }
 
 static uint32_t SetCommandAnnotation(void *device, void *queueOrCommandBuffer, const char *key,
-                                     RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                     const RENDERDOC_AnnotationValue *value)
+                                     REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                     const REDENDOC_AnnotationValue *value)
 {
-  if((valueType == eRENDERDOC_Empty && value != NULL) ||
-     (valueType != eRENDERDOC_Empty && value == NULL))
+  if((valueType == eREDENDOC_Empty && value != NULL) ||
+     (valueType != eREDENDOC_Empty && value == NULL))
   {
     RDCWARN("Invalid annotation - value should be NULL and type should be empty");
     return 3;
@@ -311,8 +311,8 @@ static uint32_t SetCommandAnnotation(void *device, void *queueOrCommandBuffer, c
     return 3;
   }
 
-  if((valueType == eRENDERDOC_Empty || valueType == eRENDERDOC_String ||
-      valueType == eRENDERDOC_APIObject) &&
+  if((valueType == eREDENDOC_Empty || valueType == eREDENDOC_String ||
+      valueType == eREDENDOC_APIObject) &&
      valueVectorWidth != 0)
   {
     RDCWARN(
@@ -333,12 +333,12 @@ static uint32_t SetCommandAnnotation(void *device, void *queueOrCommandBuffer, c
 }
 
 // defined in capture_options.cpp
-int RENDERDOC_CC SetCaptureOptionU32(RENDERDOC_CaptureOption opt, uint32_t val);
-int RENDERDOC_CC SetCaptureOptionF32(RENDERDOC_CaptureOption opt, float val);
-uint32_t RENDERDOC_CC GetCaptureOptionU32(RENDERDOC_CaptureOption opt);
-float RENDERDOC_CC GetCaptureOptionF32(RENDERDOC_CaptureOption opt);
+int REDENDOC_CC SetCaptureOptionU32(REDENDOC_CaptureOption opt, uint32_t val);
+int REDENDOC_CC SetCaptureOptionF32(REDENDOC_CaptureOption opt, float val);
+uint32_t REDENDOC_CC GetCaptureOptionU32(REDENDOC_CaptureOption opt);
+float REDENDOC_CC GetCaptureOptionF32(REDENDOC_CaptureOption opt);
 
-void RENDERDOC_CC GetAPIVersion_1_7_0(int *major, int *minor, int *patch)
+void REDENDOC_CC GetAPIVersion_1_7_0(int *major, int *minor, int *patch)
 {
   if(major)
     *major = 1;
@@ -348,10 +348,10 @@ void RENDERDOC_CC GetAPIVersion_1_7_0(int *major, int *minor, int *patch)
     *patch = 0;
 }
 
-RENDERDOC_API_1_7_0 api_1_7_0;
+REDENDOC_API_1_7_0 api_1_7_0;
 void Init_1_7_0()
 {
-  RENDERDOC_API_1_7_0 &api = api_1_7_0;
+  REDENDOC_API_1_7_0 &api = api_1_7_0;
 
   api.GetAPIVersion = &GetAPIVersion_1_7_0;
 
@@ -401,12 +401,12 @@ void Init_1_7_0()
   api.SetCommandAnnotation = &SetCommandAnnotation;
 }
 
-extern "C" RENDERDOC_API int RENDERDOC_CC RENDERDOC_GetAPI(RENDERDOC_Version version,
+extern "C" RENDERDOC_API int REDENDOC_CC REDENDOC_GetAPI(REDENDOC_Version version,
                                                            void **outAPIPointers)
 {
   if(outAPIPointers == NULL)
   {
-    RDCERR("Invalid call to RENDERDOC_GetAPI with NULL outAPIPointers");
+    RDCERR("Invalid call to REDENDOC_GetAPI with NULL outAPIPointers");
     return 0;
   }
 
@@ -417,7 +417,7 @@ extern "C" RENDERDOC_API int RENDERDOC_CC RENDERDOC_GetAPI(RENDERDOC_Version ver
 
 #define API_VERSION_HANDLE(enumver, actualver)                     \
   supportedVersions += " " STRINGIZE(CONCAT(API_, enumver));       \
-  if(version == CONCAT(eRENDERDOC_API_Version_, enumver))          \
+  if(version == CONCAT(eREDENDOC_API_Version_, enumver))          \
   {                                                                \
     CONCAT(Init_, actualver)();                                    \
     *outAPIPointers = &CONCAT(api_, actualver);                    \

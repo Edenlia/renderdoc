@@ -941,8 +941,8 @@ bool WrappedID3D11DeviceContext::ProcessChunk(ReadSerialiser &ser, D3D11Chunk ch
     case D3D11Chunk::PopMarker: ret = Serialise_PopMarker(ser); break;
 
     case D3D11Chunk::SetCommandAnnotation:
-      ret = Serialise_SetCommandAnnotation(ser, rdcstr(), eRENDERDOC_AnnotationMax, 0,
-                                           RENDERDOC_AnnotationValue());
+      ret = Serialise_SetCommandAnnotation(ser, rdcstr(), eREDENDOC_AnnotationMax, 0,
+                                           REDENDOC_AnnotationValue());
       break;
 
     case D3D11Chunk::DiscardResource: ret = Serialise_DiscardResource(ser, NULL); break;

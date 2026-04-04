@@ -417,11 +417,11 @@ bool InjectLibraries(const rdcstr &deviceID, Network::Socket *sock)
   // responsible for injecting its hooks into GLES on its own. See android_hook.cpp for more
   // information on the implementation
   value ret = conn.InvokeInstance(thread, runtime, load, runtimeObject.Object,
-                                  {conn.NewString(thread, libPath + "/" RENDERDOC_ANDROID_LIBRARY)});
+                                  {conn.NewString(thread, libPath + "/" REDENDOC_ANDROID_LIBRARY)});
 
   if(ret.tag != Tag::Void)
   {
-    RDCERR("Failed to call load(%s/%s)!", libPath.c_str(), RENDERDOC_ANDROID_LIBRARY);
+    RDCERR("Failed to call load(%s/%s)!", libPath.c_str(), REDENDOC_ANDROID_LIBRARY);
     return false;
   }
 

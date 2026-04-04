@@ -5,7 +5,7 @@
     "type": "GLOBAL",
     "library_path": "@VULKAN_LAYER_MODULE_PATH@",
     "api_version": "1.4.324",
-    "implementation_version": "@RENDERDOC_VERSION_MINOR@",
+    "implementation_version": "@REDENDOC_VERSION_MINOR@",
     "description": "Debugging capture layer for RenderDoc",
     "functions": {
       "vkGetInstanceProcAddr": "VK_LAYER_RENDERDOC_CaptureGetInstanceProcAddr",
@@ -42,7 +42,7 @@
       "@VULKAN_ENABLE_VAR@": "1"
     },
     "disable_environment": {
-      "DISABLE_VULKAN_RENDERDOC_CAPTURE_@RENDERDOC_VERSION_MAJOR@_@RENDERDOC_VERSION_MINOR@": "1"
+      "DISABLE_VULKAN_RENDERDOC_CAPTURE_@REDENDOC_VERSION_MAJOR@_@REDENDOC_VERSION_MINOR@": "1"
     }
   }
 }

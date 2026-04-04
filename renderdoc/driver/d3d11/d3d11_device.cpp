@@ -1585,7 +1585,7 @@ void WrappedID3D11Device::ReplayLog(uint32_t startEventID, uint32_t endEventID,
 
   if(!partial)
   {
-    RENDERDOC_PROFILEREGION("ApplyInitialContents");
+    REDENDOC_PROFILEREGION("ApplyInitialContents");
     D3D11MarkerRegion apply("!!!!RenderDoc Internal: ApplyInitialContents");
     GetResourceManager()->ApplyInitialContents();
   }
@@ -1974,7 +1974,7 @@ void WrappedID3D11Device::DestroyDeadObject(ID3D11DeviceChild *child)
     //
     // Instead we hijack ID3D11DeviceChild's SetPrivateData with a custom GUID to get the object
     // to delete itself.
-    wrapped->SetPrivateData(RENDERDOC_DeleteSelf, 0, NULL);
+    wrapped->SetPrivateData(REDENDOC_DeleteSelf, 0, NULL);
   }
 }
 
@@ -2003,17 +2003,17 @@ int WrappedID3D11Device::EndEvent()
 }
 
 uint32_t WrappedID3D11Device::SetObjectAnnotation(void *object, const char *key,
-                                                  RENDERDOC_AnnotationType valueType,
+                                                  REDENDOC_AnnotationType valueType,
                                                   uint32_t valueVectorWidth,
-                                                  const RENDERDOC_AnnotationValue *value)
+                                                  const REDENDOC_AnnotationValue *value)
 {
   return m_pImmediateContext->SetObjectAnnotation(object, key, valueType, valueVectorWidth, value);
 }
 
 uint32_t WrappedID3D11Device::SetCommandAnnotation(void *queueOrCommandBuffer, const char *key,
-                                                   RENDERDOC_AnnotationType valueType,
+                                                   REDENDOC_AnnotationType valueType,
                                                    uint32_t valueVectorWidth,
-                                                   const RENDERDOC_AnnotationValue *value)
+                                                   const REDENDOC_AnnotationValue *value)
 {
   if(queueOrCommandBuffer != NULL && queueOrCommandBuffer != m_pImmediateContext)
     return 2;
@@ -2400,7 +2400,7 @@ bool WrappedID3D11Device::EndFrameCapture(DeviceOwnedWindow devWnd)
 
     m_Failures++;
 
-    if((RenderDoc::Inst().GetOverlayBits() & eRENDERDOC_Overlay_Enabled) && swapper)
+    if((RenderDoc::Inst().GetOverlayBits() & eREDENDOC_Overlay_Enabled) && swapper)
     {
       D3D11RenderState old = *m_pImmediateContext->GetCurrentPipelineState();
 
@@ -2743,7 +2743,7 @@ HRESULT WrappedID3D11Device::Present(IDXGISwapper *swapper, UINT SyncInterval, U
 
     uint32_t overlay = RenderDoc::Inst().GetOverlayBits();
 
-    if(overlay & eRENDERDOC_Overlay_Enabled)
+    if(overlay & eREDENDOC_Overlay_Enabled)
     {
       ID3D11RenderTargetView *rtv = m_SwapChains[swapper];
 

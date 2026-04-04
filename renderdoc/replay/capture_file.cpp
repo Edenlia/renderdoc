@@ -104,9 +104,9 @@ public:
   virtual ~CaptureFile();
 
   ResultDetails OpenFile(const rdcstr &filename, const rdcstr &filetype,
-                         RENDERDOC_ProgressCallback progress);
+                         REDENDOC_ProgressCallback progress);
   ResultDetails OpenBuffer(const bytebuf &buffer, const rdcstr &filetype,
-                           RENDERDOC_ProgressCallback progress);
+                           REDENDOC_ProgressCallback progress);
   ResultDetails CopyFileTo(const rdcstr &filename);
   void Shutdown() { delete this; }
   ReplaySupport LocalReplaySupport() { return m_Support; }
@@ -115,14 +115,14 @@ public:
   uint64_t TimestampBase() { return m_RDC ? m_RDC->GetTimestampBase() : 0; }
   double TimestampFrequency() { return m_RDC ? m_RDC->GetTimestampFrequency() : 1.0; }
   rdcpair<ResultDetails, IReplayController *> OpenCapture(const ReplayOptions &opts,
-                                                          RENDERDOC_ProgressCallback progress);
+                                                          REDENDOC_ProgressCallback progress);
 
   void SetMetadata(const rdcstr &driverName, uint64_t machineIdent, FileType thumbType,
                    uint32_t thumbWidth, uint32_t thumbHeight, const bytebuf &thumbData,
                    uint64_t timeBase, double timeFreq);
 
   ResultDetails Convert(const rdcstr &filename, const rdcstr &filetype, const SDFile *file,
-                        RENDERDOC_ProgressCallback progress);
+                        REDENDOC_ProgressCallback progress);
 
   rdcarray<CaptureFileFormat> GetCaptureFileFormats()
   {
@@ -165,7 +165,7 @@ public:
   ResultDetails WriteSection(const SectionProperties &props, const bytebuf &contents);
 
   bool HasCallstacks();
-  ResultDetails InitResolver(bool interactive, RENDERDOC_ProgressCallback progress);
+  ResultDetails InitResolver(bool interactive, REDENDOC_ProgressCallback progress);
   rdcarray<rdcstr> GetResolve(const rdcarray<uint64_t> &callstack);
 
   ResultDetails EmbedDependenciesIntoCapture();
@@ -177,7 +177,7 @@ public:
 private:
   ResultDetails Init();
 
-  RDResult InitStructuredData(RENDERDOC_ProgressCallback progress = RENDERDOC_ProgressCallback());
+  RDResult InitStructuredData(REDENDOC_ProgressCallback progress = REDENDOC_ProgressCallback());
 
   RDCFile *m_RDC = NULL;
   Callstack::StackResolver *m_Resolver = NULL;
@@ -199,7 +199,7 @@ CaptureFile::~CaptureFile()
 }
 
 ResultDetails CaptureFile::OpenFile(const rdcstr &filename, const rdcstr &filetype,
-                                    RENDERDOC_ProgressCallback progress)
+                                    REDENDOC_ProgressCallback progress)
 {
   CaptureImporter importer = RenderDoc::Inst().GetCaptureImporter(filetype);
 
@@ -240,7 +240,7 @@ ResultDetails CaptureFile::OpenFile(const rdcstr &filename, const rdcstr &filety
 }
 
 ResultDetails CaptureFile::OpenBuffer(const bytebuf &buffer, const rdcstr &filetype,
-                                      RENDERDOC_ProgressCallback progress)
+                                      REDENDOC_ProgressCallback progress)
 {
   CaptureImporter importer = RenderDoc::Inst().GetCaptureImporter(filetype);
 
@@ -324,7 +324,7 @@ ResultDetails CaptureFile::Init()
   return RDResult();
 }
 
-RDResult CaptureFile::InitStructuredData(RENDERDOC_ProgressCallback progress)
+RDResult CaptureFile::InitStructuredData(REDENDOC_ProgressCallback progress)
 {
   if(m_StructuredData.chunks.empty())
   {
@@ -342,7 +342,7 @@ RDResult CaptureFile::InitStructuredData(RENDERDOC_ProgressCallback progress)
         SET_ERROR_RESULT(result, ResultCode::APIUnsupported,
                          "Can't get structured data for driver %s", m_RDC->GetDriverName().c_str());
 
-      RenderDoc::Inst().SetProgressCallback<LoadProgress>(RENDERDOC_ProgressCallback());
+      RenderDoc::Inst().SetProgressCallback<LoadProgress>(REDENDOC_ProgressCallback());
 
       return result;
     }
@@ -355,7 +355,7 @@ RDResult CaptureFile::InitStructuredData(RENDERDOC_ProgressCallback progress)
 }
 
 rdcpair<ResultDetails, IReplayController *> CaptureFile::OpenCapture(const ReplayOptions &opts,
-                                                                     RENDERDOC_ProgressCallback progress)
+                                                                     REDENDOC_ProgressCallback progress)
 {
   ResultDetails ret;
   ReplayController *render = NULL;
@@ -382,7 +382,7 @@ rdcpair<ResultDetails, IReplayController *> CaptureFile::OpenCapture(const Repla
 
   ret = render->CreateDevice(m_RDC, opts);
 
-  RenderDoc::Inst().SetProgressCallback<LoadProgress>(RENDERDOC_ProgressCallback());
+  RenderDoc::Inst().SetProgressCallback<LoadProgress>(REDENDOC_ProgressCallback());
 
   if(!ret.OK())
   {
@@ -425,7 +425,7 @@ void CaptureFile::SetMetadata(const rdcstr &driverName, uint64_t machineIdent, F
 }
 
 ResultDetails CaptureFile::Convert(const rdcstr &filename, const rdcstr &filetype,
-                                   const SDFile *file, RENDERDOC_ProgressCallback progress)
+                                   const SDFile *file, REDENDOC_ProgressCallback progress)
 {
   if(!m_RDC)
   {
@@ -439,8 +439,8 @@ ResultDetails CaptureFile::Convert(const rdcstr &filename, const rdcstr &filetyp
 
   // we have two separate steps that can take time - fetching the structured data, and then
   // exporting or writing to RDC
-  RENDERDOC_ProgressCallback fetchProgress = [progress](float p) { progress(p * 0.5f); };
-  RENDERDOC_ProgressCallback exportProgress = [progress](float p) { progress(0.5f + p * 0.5f); };
+  REDENDOC_ProgressCallback fetchProgress = [progress](float p) { progress(p * 0.5f); };
+  REDENDOC_ProgressCallback exportProgress = [progress](float p) { progress(0.5f + p * 0.5f); };
 
   CaptureExporter exporter = RenderDoc::Inst().GetCaptureExporter(filetype);
 
@@ -787,7 +787,7 @@ bool CaptureFile::HasCallstacks()
   return m_RDC && m_RDC->SectionIndex(SectionType::ResolveDatabase) >= 0;
 }
 
-ResultDetails CaptureFile::InitResolver(bool interactive, RENDERDOC_ProgressCallback progress)
+ResultDetails CaptureFile::InitResolver(bool interactive, REDENDOC_ProgressCallback progress)
 {
   if(!m_RDC)
   {
@@ -888,7 +888,7 @@ rdcarray<rdcstr> CaptureFile::GetPendingDependenciesNicknames()
   return RenderDoc::Inst().GetTrackedFileNicknames();
 }
 
-extern "C" RENDERDOC_API ICaptureFile *RENDERDOC_CC RENDERDOC_OpenCaptureFile()
+extern "C" RENDERDOC_API ICaptureFile *RENDERDOC_CC REDENDOC_OpenCaptureFile()
 {
   return new CaptureFile();
 }

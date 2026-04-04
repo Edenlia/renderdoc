@@ -67,8 +67,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION RENDERDOC_VERSION_MAJOR,RENDERDOC_VERSION_MINOR,0,0
- PRODUCTVERSION RENDERDOC_VERSION_MAJOR,RENDERDOC_VERSION_MINOR,0,0
+ FILEVERSION REDENDOC_VERSION_MAJOR,REDENDOC_VERSION_MINOR,0,0
+ PRODUCTVERSION REDENDOC_VERSION_MAJOR,REDENDOC_VERSION_MINOR,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -86,9 +86,9 @@ BEGIN
             VALUE "CompanyName", "Baldur Karlsson"
             VALUE "FileDescription", "Core DLL for RedenDoc"
             VALUE "FileVersion", MAJOR_MINOR_VERSION_STRING ".0.0"
-            VALUE "InternalName", "renderdoc"
+            VALUE "InternalName", "redendoc"
             VALUE "LegalCopyright", "Copyright © 2026 Baldur Karlsson"
-            VALUE "OriginalFilename", "renderdoc.dll"
+            VALUE "OriginalFilename", "redendoc.dll"
             VALUE "ProductName", "RedenDoc"
             VALUE "ProductVersion", FULL_VERSION_STRING
         END

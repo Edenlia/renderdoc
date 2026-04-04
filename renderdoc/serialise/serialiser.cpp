@@ -579,7 +579,7 @@ void Serialiser<SerialiserMode::Writing>::EndChunk()
 
 template <>
 void Serialiser<SerialiserMode::Writing>::WriteStructuredFile(const SDFile &file,
-                                                              RENDERDOC_ProgressCallback progress)
+                                                              REDENDOC_ProgressCallback progress)
 {
   Serialiser<SerialiserMode::Writing> scratchWriter(
       new StreamWriter(StreamWriter::DefaultScratchSize), Ownership::Stream);

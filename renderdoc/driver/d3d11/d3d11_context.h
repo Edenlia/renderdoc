@@ -298,8 +298,8 @@ private:
 
 #define SERIALISED_ID3D11CONTEXT_ANNOTATION_FUNCTIONS()                                        \
   IMPLEMENT_FUNCTION_SERIALISED(bool, SetCommandAnnotation, rdcstr key,                        \
-                                RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth, \
-                                RENDERDOC_AnnotationValue value);
+                                REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth, \
+                                REDENDOC_AnnotationValue value);
 
   SERIALISED_ID3D11CONTEXT_ANNOTATION_FUNCTIONS();
 
@@ -378,10 +378,10 @@ public:
   void IntRelease();
 
   // annotations functions in DeviceContext (immediate only)
-  uint32_t SetCommandAnnotation(const char *key, RENDERDOC_AnnotationType valueType,
-                                uint32_t valueVectorWidth, const RENDERDOC_AnnotationValue *value);
-  uint32_t SetObjectAnnotation(void *object, const char *key, RENDERDOC_AnnotationType valueType,
-                               uint32_t valueVectorWidth, const RENDERDOC_AnnotationValue *value);
+  uint32_t SetCommandAnnotation(const char *key, REDENDOC_AnnotationType valueType,
+                                uint32_t valueVectorWidth, const REDENDOC_AnnotationValue *value);
+  uint32_t SetObjectAnnotation(void *object, const char *key, REDENDOC_AnnotationType valueType,
+                               uint32_t valueVectorWidth, const REDENDOC_AnnotationValue *value);
 
   //////////////////////////////
   // implement IUnknown

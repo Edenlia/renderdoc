@@ -70,7 +70,7 @@ struct ResourceId
   bool operator!=(const ResourceId u) const { return id != u.id; }
   DOCUMENT("Compares two ``ResourceId`` objects for less-than.");
   bool operator<(const ResourceId u) const { return id < u.id; }
-#if defined(RENDERDOC_QT_COMPAT)
+#if defined(REDENDOC_QT_COMPAT)
   operator QVariant() const { return QVariant::fromValue(*this); }
 #endif
 
@@ -85,7 +85,7 @@ private:
 
 // declare metatype/reflection for ResourceId here as the struct itself is declared before including
 // all relevant headers above
-#if defined(RENDERDOC_QT_COMPAT)
+#if defined(REDENDOC_QT_COMPAT)
 Q_DECLARE_METATYPE(ResourceId);
 #endif
 

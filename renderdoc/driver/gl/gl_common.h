@@ -46,9 +46,9 @@ DECLARE_REFLECTION_ENUM(RDCGLenum);
 // available from an OpenGL ES emulator. This is treated as a plugin but it doesn't ship with
 // renderdoc, so if you want to replay GLES captures using such an emulator you need to drop the
 // appropriate libEGL.dll into plugins/gles/ in your RenderDoc folder.
-#define RENDERDOC_SUPPORT_GL
-#define RENDERDOC_SUPPORT_GLES
-#define RENDERDOC_SUPPORT_EGL
+#define REDENDOC_SUPPORT_GL
+#define REDENDOC_SUPPORT_GLES
+#define REDENDOC_SUPPORT_EGL
 
 #else
 
@@ -114,7 +114,7 @@ struct GLWindowingData
 
 #elif ENABLED(RDOC_LINUX)
 
-#if defined(RENDERDOC_SUPPORT_GL)
+#if defined(REDENDOC_SUPPORT_GL)
 // cheeky way to prevent GL/gl.h from being included, as we want to use
 // glcorearb.h from above
 #define __gl_h_
@@ -127,7 +127,7 @@ struct GLWindowingData
 
 #endif
 
-#if defined(RENDERDOC_SUPPORT_EGL)
+#if defined(REDENDOC_SUPPORT_EGL)
 
 // force include the elgplatform.h, as we want to use
 // our own because the system one could be a bit older and
@@ -149,7 +149,7 @@ struct GLWindowingData
     cfg = NULL;
   }
 
-#if defined(RENDERDOC_SUPPORT_GL)
+#if defined(REDENDOC_SUPPORT_GL)
   typedef Display *GLDisplayPtr;
   typedef GLXContext GLContextPtr;
   typedef GLXDrawable GLWindowPtr;
@@ -161,7 +161,7 @@ struct GLWindowingData
   typedef void *GLConfigPtr;
 #endif
 
-#if !defined(RENDERDOC_SUPPORT_EGL)
+#if !defined(REDENDOC_SUPPORT_EGL)
   typedef void *EGLDisplay;
   typedef void *EGLContext;
   typedef void *EGLSurface;
@@ -366,14 +366,14 @@ struct GLVersion
 
 rdcarray<GLVersion> GetReplayVersions(RDCDriver api);
 
-#if defined(RENDERDOC_SUPPORT_GL)
+#if defined(REDENDOC_SUPPORT_GL)
 
 // platform specific (WGL, GLX, etc)
 GLPlatform &GetGLPlatform();
 
 #endif
 
-#if defined(RENDERDOC_SUPPORT_EGL)
+#if defined(REDENDOC_SUPPORT_EGL)
 
 // using EGL. Different name since it both platform GL and EGL libraries can be available at once
 GLPlatform &GetEGLPlatform();
@@ -434,7 +434,7 @@ T CheckConstParam(T t);
 
 // define this if you e.g. haven't compiled the D3D modules and want to disable
 // interop capture support.
-#define RENDERDOC_DX_GL_INTEROP OPTION_ON
+#define REDENDOC_DX_GL_INTEROP OPTION_ON
 
 // similar to RDCUNIMPLEMENTED but for things that are hit often so we don't want to fire the
 // debugbreak.

@@ -68,92 +68,92 @@ RDOC_CONFIG(rdcarray<rdcstr>, Replay_Shader_LimitedSearchDirPaths, {},
             "Companion array to DXBC.Debug.SearchDirPaths - listing paths which should not be "
             "searched exhaustively but only used for simple lookups.");
 
-void WriteAnnotation(SDObject *obj, RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                     RENDERDOC_AnnotationValue value)
+void WriteAnnotation(SDObject *obj, REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                     REDENDOC_AnnotationValue value)
 {
-  if(valueType == eRENDERDOC_Empty)
+  if(valueType == eREDENDOC_Empty)
   {
     RDCERR("Invalid type of annotation to write");
     return;
   }
 
-  const rdcinflexiblestr types[eRENDERDOC_APIObject + 1][4] = {
-      // eRENDERDOC_Empty,
+  const rdcinflexiblestr types[eREDENDOC_APIObject + 1][4] = {
+      // eREDENDOC_Empty,
       {""_lit, ""_lit, ""_lit, ""_lit},
-      // eRENDERDOC_Bool,
+      // eREDENDOC_Bool,
       {"bool"_lit, "bool2"_lit, "bool3"_lit, "bool4"_lit},
-      // eRENDERDOC_Int32,
+      // eREDENDOC_Int32,
       {"int"_lit, "int2"_lit, "int3"_lit, "int4"_lit},
-      // eRENDERDOC_UInt32,
+      // eREDENDOC_UInt32,
       {"uint"_lit, "uint2"_lit, "uint3"_lit, "uint4"_lit},
-      // eRENDERDOC_Int64,
+      // eREDENDOC_Int64,
       {"long"_lit, "long2"_lit, "long3"_lit, "long4"_lit},
-      // eRENDERDOC_UInt64,
+      // eREDENDOC_UInt64,
       {"ulong"_lit, "ulong2"_lit, "ulong3"_lit, "ulong4"_lit},
-      // eRENDERDOC_Float,
+      // eREDENDOC_Float,
       {"float"_lit, "float2"_lit, "float3"_lit, "float4"_lit},
-      // eRENDERDOC_Double,
+      // eREDENDOC_Double,
       {"double"_lit, "double2"_lit, "double3"_lit, "double4"_lit},
-      // eRENDERDOC_String,
+      // eREDENDOC_String,
       {"string"_lit, ""_lit, ""_lit, ""_lit},
-      // eRENDERDOC_APIObject,
+      // eREDENDOC_APIObject,
       {"ResourceId"_lit, ""_lit, ""_lit, ""_lit},
   };
 
-  const uint32_t byteSize[eRENDERDOC_APIObject + 1] = {
-      // eRENDERDOC_Empty,
+  const uint32_t byteSize[eREDENDOC_APIObject + 1] = {
+      // eREDENDOC_Empty,
       0,
-      // eRENDERDOC_Bool,
+      // eREDENDOC_Bool,
       1,
-      // eRENDERDOC_Int32,
+      // eREDENDOC_Int32,
       4,
-      // eRENDERDOC_UInt32,
+      // eREDENDOC_UInt32,
       4,
-      // eRENDERDOC_Int64,
+      // eREDENDOC_Int64,
       8,
-      // eRENDERDOC_UInt64,
+      // eREDENDOC_UInt64,
       8,
-      // eRENDERDOC_Float,
+      // eREDENDOC_Float,
       4,
-      // eRENDERDOC_Double,
+      // eREDENDOC_Double,
       8,
-      // eRENDERDOC_String,
+      // eREDENDOC_String,
       0,
-      // eRENDERDOC_APIObject,
+      // eREDENDOC_APIObject,
       8,
   };
 
-  const SDBasic basetype[eRENDERDOC_APIObject + 1] = {
-      // eRENDERDOC_Empty,
+  const SDBasic basetype[eREDENDOC_APIObject + 1] = {
+      // eREDENDOC_Empty,
       SDBasic::Null,
-      // eRENDERDOC_Bool,
+      // eREDENDOC_Bool,
       SDBasic::Boolean,
-      // eRENDERDOC_Int32,
+      // eREDENDOC_Int32,
       SDBasic::SignedInteger,
-      // eRENDERDOC_UInt32,
+      // eREDENDOC_UInt32,
       SDBasic::UnsignedInteger,
-      // eRENDERDOC_Int64,
+      // eREDENDOC_Int64,
       SDBasic::SignedInteger,
-      // eRENDERDOC_UInt64,
+      // eREDENDOC_UInt64,
       SDBasic::UnsignedInteger,
-      // eRENDERDOC_Float,
+      // eREDENDOC_Float,
       SDBasic::Float,
-      // eRENDERDOC_Double,
+      // eREDENDOC_Double,
       SDBasic::Float,
-      // eRENDERDOC_String,
+      // eREDENDOC_String,
       SDBasic::String,
-      // eRENDERDOC_APIObject,
+      // eREDENDOC_APIObject,
       SDBasic::Resource,
   };
 
   if(valueVectorWidth > 1)
   {
-    if(valueType == eRENDERDOC_APIObject)
+    if(valueType == eREDENDOC_APIObject)
     {
       RDCERR("Invalid vector width for API object");
       return;
     }
-    else if(valueType == eRENDERDOC_String)
+    else if(valueType == eREDENDOC_String)
     {
       RDCERR("Invalid vector width for string");
       return;
@@ -164,7 +164,7 @@ void WriteAnnotation(SDObject *obj, RENDERDOC_AnnotationType valueType, uint32_t
     obj->type.basetype = SDBasic::Struct;
     obj->type.name = types[valueType][valueVectorWidth - 1];
 
-    RENDERDOC_AnnotationValue tmp = {};
+    REDENDOC_AnnotationValue tmp = {};
     for(uint32_t i = 0; i < valueVectorWidth; i++)
     {
       SDObject *child = obj->CreateChildByKeyPath(comps[i]);
@@ -190,50 +190,50 @@ void WriteAnnotation(SDObject *obj, RENDERDOC_AnnotationType valueType, uint32_t
 
   switch(valueType)
   {
-    case eRENDERDOC_Empty:
-    case eRENDERDOC_AnnotationMax: RDCERR("Invalid annotation type"); return;
-    case eRENDERDOC_Bool:
+    case eREDENDOC_Empty:
+    case eREDENDOC_AnnotationMax: RDCERR("Invalid annotation type"); return;
+    case eREDENDOC_Bool:
     {
       obj->data.basic.b = value.boolean;
       break;
     }
-    case eRENDERDOC_Int32:
+    case eREDENDOC_Int32:
     {
       obj->data.basic.i = value.int32;
       break;
     }
-    case eRENDERDOC_UInt32:
+    case eREDENDOC_UInt32:
     {
       obj->data.basic.u = value.uint32;
       break;
     }
-    case eRENDERDOC_Int64:
+    case eREDENDOC_Int64:
     {
       obj->data.basic.u = value.int64;
       break;
     }
-    case eRENDERDOC_UInt64:
+    case eREDENDOC_UInt64:
     {
       obj->data.basic.u = value.uint64;
       break;
     }
-    case eRENDERDOC_Float:
+    case eREDENDOC_Float:
     {
       obj->data.basic.d = value.float32;
       break;
     }
-    case eRENDERDOC_Double:
+    case eREDENDOC_Double:
     {
       obj->data.basic.d = value.float64;
       break;
     }
-    case eRENDERDOC_String:
+    case eREDENDOC_String:
     {
       obj->type.byteSize = strlen(value.string);
       obj->data.str = value.string;
       break;
     }
-    case eRENDERDOC_APIObject:
+    case eREDENDOC_APIObject:
     {
       memcpy(&obj->data.basic.id, &value.uint64, sizeof(ResourceId));
       break;
@@ -412,49 +412,49 @@ rdcstr DoStringise(const VendorExtensions &el)
 }
 
 template <>
-rdcstr DoStringise(const RENDERDOC_InputButton &el)
+rdcstr DoStringise(const REDENDOC_InputButton &el)
 {
   char alphanumericbuf[2] = {'A', 0};
 
   // enums map straight to ascii
-  if((el >= eRENDERDOC_Key_A && el <= eRENDERDOC_Key_Z) ||
-     (el >= eRENDERDOC_Key_0 && el <= eRENDERDOC_Key_9))
+  if((el >= eREDENDOC_Key_A && el <= eREDENDOC_Key_Z) ||
+     (el >= eREDENDOC_Key_0 && el <= eREDENDOC_Key_9))
   {
     alphanumericbuf[0] = (char)el;
     return alphanumericbuf;
   }
 
-  BEGIN_ENUM_STRINGISE(RENDERDOC_InputButton);
+  BEGIN_ENUM_STRINGISE(REDENDOC_InputButton);
   {
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Divide, "/");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Multiply, "*");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Subtract, "-");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Plus, "+");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Divide, "/");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Multiply, "*");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Subtract, "-");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Plus, "+");
 
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F1, "F1");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F2, "F2");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F3, "F3");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F4, "F4");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F5, "F5");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F6, "F6");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F7, "F7");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F8, "F8");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F9, "F9");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F10, "F10");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F11, "F11");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_F12, "F12");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F1, "F1");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F2, "F2");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F3, "F3");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F4, "F4");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F5, "F5");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F6, "F6");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F7, "F7");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F8, "F8");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F9, "F9");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F10, "F10");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F11, "F11");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_F12, "F12");
 
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Home, "Home");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_End, "End");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Insert, "Insert");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Delete, "Delete");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_PageUp, "PageUp");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_PageDn, "PageDn");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Home, "Home");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_End, "End");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Insert, "Insert");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Delete, "Delete");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_PageUp, "PageUp");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_PageDn, "PageDn");
 
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Backspace, "Backspace");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Tab, "Tab");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_PrtScrn, "PrtScrn");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Key_Pause, "Pause");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Backspace, "Backspace");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Tab, "Tab");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_PrtScrn, "PrtScrn");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Key_Pause, "Pause");
   }
   END_ENUM_STRINGISE();
 }
@@ -475,27 +475,27 @@ rdcstr DoStringise(const SystemChunk &el)
 }
 
 template <>
-rdcstr DoStringise(const RENDERDOC_AnnotationType &el)
+rdcstr DoStringise(const REDENDOC_AnnotationType &el)
 {
-  BEGIN_ENUM_STRINGISE(RENDERDOC_AnnotationType);
+  BEGIN_ENUM_STRINGISE(REDENDOC_AnnotationType);
   {
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Bool, "bool");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Int32, "int32");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_UInt32, "uint32");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Int64, "int64");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_UInt64, "uint64");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Float, "float");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_Double, "double");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_String, "string");
-    STRINGISE_ENUM_NAMED(eRENDERDOC_APIObject, "object");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Bool, "bool");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Int32, "int32");
+    STRINGISE_ENUM_NAMED(eREDENDOC_UInt32, "uint32");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Int64, "int64");
+    STRINGISE_ENUM_NAMED(eREDENDOC_UInt64, "uint64");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Float, "float");
+    STRINGISE_ENUM_NAMED(eREDENDOC_Double, "double");
+    STRINGISE_ENUM_NAMED(eREDENDOC_String, "string");
+    STRINGISE_ENUM_NAMED(eREDENDOC_APIObject, "object");
   }
   END_ENUM_STRINGISE();
 }
 
 template <class SerialiserType>
-void DoSerialise(SerialiserType &ser, RENDERDOC_AnnotationValue &el)
+void DoSerialise(SerialiserType &ser, REDENDOC_AnnotationValue &el)
 {
-  if(ser.GetStructArg() == eRENDERDOC_String)
+  if(ser.GetStructArg() == eREDENDOC_String)
   {
     SERIALISE_MEMBER(string).Hidden();
   }
@@ -505,7 +505,7 @@ void DoSerialise(SerialiserType &ser, RENDERDOC_AnnotationValue &el)
   }
 }
 
-INSTANTIATE_SERIALISE_TYPE(RENDERDOC_AnnotationValue);
+INSTANTIATE_SERIALISE_TYPE(REDENDOC_AnnotationValue);
 
 RenderDoc &RenderDoc::Inst()
 {
@@ -610,15 +610,15 @@ RenderDoc::RenderDoc()
   m_Cap = 0;
 
   m_FocusKeys.clear();
-  m_FocusKeys.push_back(eRENDERDOC_Key_F11);
+  m_FocusKeys.push_back(eREDENDOC_Key_F11);
 
   m_CaptureKeys.clear();
-  m_CaptureKeys.push_back(eRENDERDOC_Key_F12);
-  m_CaptureKeys.push_back(eRENDERDOC_Key_PrtScrn);
+  m_CaptureKeys.push_back(eREDENDOC_Key_F12);
+  m_CaptureKeys.push_back(eREDENDOC_Key_PrtScrn);
 
   m_ExHandler = NULL;
 
-  m_Overlay = eRENDERDOC_Overlay_Default;
+  m_Overlay = eREDENDOC_Overlay_Default;
 
   m_VulkanCheck = NULL;
   m_VulkanInstall = NULL;
@@ -637,7 +637,7 @@ void RenderDoc::Initialise()
 
   Threading::Init();
 
-#if !RENDERDOC_STABLE_BUILD
+#if !REDENDOC_STABLE_BUILD
   Superluminal::Init();
 #endif
 
@@ -722,7 +722,7 @@ void RenderDoc::Initialise()
   RDCLOG("Packaged for %s (%s) - %s", DISTRIBUTION_NAME, DISTRIBUTION_VERSION, DISTRIBUTION_CONTACT);
 #endif
 
-#if defined(RENDERDOC_HOOK_DLSYM)
+#if defined(REDENDOC_HOOK_DLSYM)
   RDCWARN("dlsym() hooking enabled!");
 #endif
 
@@ -1354,10 +1354,10 @@ rdcstr RenderDoc::GetOverlayText(RDCDriver driver, DeviceOwnedWindow devWnd, uin
 
   if(activeWindow)
   {
-    if(overlay & eRENDERDOC_Overlay_FrameNumber)
+    if(overlay & eREDENDOC_Overlay_FrameNumber)
       overlayText += StringFormat::Fmt(" Frame: %d.", frameNumber);
 
-    if(overlay & eRENDERDOC_Overlay_FrameRate)
+    if(overlay & eREDENDOC_Overlay_FrameRate)
     {
       const double frameTime = m_FrameTimer.GetAvgFrameTime();
       // max with 0.01ms so that we don't divide by zero
@@ -1397,7 +1397,7 @@ rdcstr RenderDoc::GetOverlayText(RDCDriver driver, DeviceOwnedWindow devWnd, uin
   {
     if(activeWindow)
     {
-      rdcarray<RENDERDOC_InputButton> keys = GetCaptureKeys();
+      rdcarray<REDENDOC_InputButton> keys = GetCaptureKeys();
 
       if(Keyboard::PlatformHasKeyInput())
       {
@@ -1420,7 +1420,7 @@ rdcstr RenderDoc::GetOverlayText(RDCDriver driver, DeviceOwnedWindow devWnd, uin
           overlayText += "No remote access connection.";
       }
 
-      if(overlay & eRENDERDOC_Overlay_CaptureList)
+      if(overlay & eREDENDOC_Overlay_CaptureList)
       {
         overlayText += StringFormat::Fmt(" %d Captures saved.\n", (uint32_t)m_Captures.size());
 
@@ -1439,7 +1439,7 @@ rdcstr RenderDoc::GetOverlayText(RDCDriver driver, DeviceOwnedWindow devWnd, uin
     }
     else
     {
-      rdcarray<RENDERDOC_InputButton> keys = GetFocusKeys();
+      rdcarray<REDENDOC_InputButton> keys = GetFocusKeys();
 
       if(Keyboard::PlatformHasKeyInput())
       {

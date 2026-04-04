@@ -919,7 +919,7 @@ void StreamWriter::HandleError(RDResult result)
   m_InMemory = false;
 }
 
-void StreamTransfer(StreamWriter *writer, StreamReader *reader, RENDERDOC_ProgressCallback progress)
+void StreamTransfer(StreamWriter *writer, StreamReader *reader, REDENDOC_ProgressCallback progress)
 {
   uint64_t totalSize = reader->GetSize();
 

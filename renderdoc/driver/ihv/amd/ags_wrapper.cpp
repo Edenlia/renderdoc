@@ -101,8 +101,8 @@ public:
     extensionParams.numBreadcrumbMarkers = 0;
     extensionParams.pAppName = L"RenderDoc";
     extensionParams.pEngineName = L"RenderDoc";
-    extensionParams.appVersion = RENDERDOC_VERSION_MAJOR << 8 | RENDERDOC_VERSION_MINOR;
-    extensionParams.engineVersion = RENDERDOC_VERSION_MAJOR << 8 | RENDERDOC_VERSION_MINOR;
+    extensionParams.appVersion = REDENDOC_VERSION_MAJOR << 8 | REDENDOC_VERSION_MINOR;
+    extensionParams.engineVersion = REDENDOC_VERSION_MAJOR << 8 | REDENDOC_VERSION_MINOR;
     extensionParams.crossfireMode = AGS_CROSSFIRE_MODE_DISABLE;
     extensionParams.uavSlot = reg;
 
@@ -153,8 +153,8 @@ public:
 
     extensionParams.pAppName = L"RenderDoc";
     extensionParams.pEngineName = L"RenderDoc";
-    extensionParams.appVersion = RENDERDOC_VERSION_MAJOR << 8 | RENDERDOC_VERSION_MINOR;
-    extensionParams.engineVersion = RENDERDOC_VERSION_MAJOR << 8 | RENDERDOC_VERSION_MINOR;
+    extensionParams.appVersion = REDENDOC_VERSION_MAJOR << 8 | REDENDOC_VERSION_MINOR;
+    extensionParams.engineVersion = REDENDOC_VERSION_MAJOR << 8 | REDENDOC_VERSION_MINOR;
     extensionParams.uavSlot = reg;
 
     if(reg == 0)

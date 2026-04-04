@@ -144,7 +144,7 @@ rdcarray<ABI> GetSupportedABIs(const rdcstr &deviceID)
 
 rdcstr GetRenderDocPackageForABI(ABI abi)
 {
-  return RENDERDOC_ANDROID_PACKAGE_BASE "." + GetPlainABIName(abi);
+  return REDENDOC_ANDROID_PACKAGE_BASE "." + GetPlainABIName(abi);
 }
 
 rdcstr GetPathForPackage(const rdcstr &deviceID, const rdcstr &packageName)

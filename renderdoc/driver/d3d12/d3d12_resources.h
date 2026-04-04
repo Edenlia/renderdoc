@@ -73,7 +73,7 @@ protected:
   D3D12ResourceRecord *m_pRecord;
 };
 
-extern const GUID RENDERDOC_ID3D12ShaderGUID_ShaderDebugMagicValue;
+extern const GUID REDENDOC_ID3D12ShaderGUID_ShaderDebugMagicValue;
 
 template <typename NestedType, typename NestedType1 = NestedType, typename NestedType2 = NestedType1>
 class WrappedDeviceChild12 : public RefCounter12<NestedType>,
@@ -296,7 +296,7 @@ public:
 
   HRESULT STDMETHODCALLTYPE SetPrivateData(REFGUID guid, UINT DataSize, const void *pData)
   {
-    if(guid == RENDERDOC_ID3D12ShaderGUID_ShaderDebugMagicValue)
+    if(guid == REDENDOC_ID3D12ShaderGUID_ShaderDebugMagicValue)
       return m_pDevice->SetShaderDebugPath(this, (const char *)pData);
 
     if(guid == WKPDID_D3DDebugObjectName)

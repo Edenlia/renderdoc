@@ -45,7 +45,7 @@
 // It's 41 characters to allow 40 characters of commit hash plus trailing NULL.
 // Then version.cpp is the only thing that needs to be rebuilt when the git commit changes
 //
-// Only available internally, external users should use RENDERDOC_GetCommitHash()
+// Only available internally, external users should use REDENDOC_GetCommitHash()
 #if defined(RENDERDOC_EXPORTS)
 extern "C" const char GitVersionHash[41];
 #endif
@@ -54,8 +54,8 @@ extern "C" const char GitVersionHash[41];
 // version number upstream, possibly with some patches applied as necessary.
 // Any other build whether it's including experimental local changes or just from the tip of the
 // latest code at some other point should be considered unstable and leave this as 0.
-#if !defined(RENDERDOC_STABLE_BUILD)
-#define RENDERDOC_STABLE_BUILD 0
+#if !defined(REDENDOC_STABLE_BUILD)
+#define REDENDOC_STABLE_BUILD 0
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -88,21 +88,21 @@ extern "C" const char GitVersionHash[41];
 
 // You should NOT enable this variable. This is used by upstream builds to determine whether
 // this is an official build e.g. that should send crash reports.
-#define RENDERDOC_OFFICIAL_BUILD 0
+#define REDENDOC_OFFICIAL_BUILD 0
 
 // The major and minor version that describe this build. These numbers are modified linearly
 // upstream and should not be modified downstream. You can set DISTRIBUTION_VERSION to include any
 // arbitrary release marker or package version you wish.
-#define RENDERDOC_VERSION_MAJOR 1
-#define RENDERDOC_VERSION_MINOR 44
+#define REDENDOC_VERSION_MAJOR 1
+#define REDENDOC_VERSION_MINOR 44
 
 #define RDOC_INTERNAL_VERSION_STRINGIZE2(a) #a
 #define RDOC_INTERNAL_VERSION_STRINGIZE(a) RDOC_INTERNAL_VERSION_STRINGIZE2(a)
 
 // string that's just "major.minor"
 #define MAJOR_MINOR_VERSION_STRING                         \
-  RDOC_INTERNAL_VERSION_STRINGIZE(RENDERDOC_VERSION_MAJOR) \
-  "." RDOC_INTERNAL_VERSION_STRINGIZE(RENDERDOC_VERSION_MINOR)
+  RDOC_INTERNAL_VERSION_STRINGIZE(REDENDOC_VERSION_MAJOR) \
+  "." RDOC_INTERNAL_VERSION_STRINGIZE(REDENDOC_VERSION_MINOR)
 
 // string that's the actual version number, either from the distribution or just vX.Y
 #if defined(DISTRIBUTION_VERSION)

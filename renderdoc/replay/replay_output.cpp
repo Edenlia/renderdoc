@@ -541,7 +541,7 @@ rdcpair<uint32_t, uint32_t> ReplayOutput::PickVertex(uint32_t x, uint32_t y)
 {
   CHECK_REPLAY_THREAD();
 
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   ActionDescription *action = m_pController->GetActionByEID(m_EventID);
 
@@ -773,7 +773,7 @@ void ReplayOutput::Display()
 {
   CHECK_REPLAY_THREAD();
 
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   if(m_pDevice->CheckResizeOutputWindow(m_MainOutput.outputID))
   {
@@ -898,7 +898,7 @@ void ReplayOutput::DisplayTex()
 {
   CHECK_REPLAY_THREAD();
 
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   ActionDescription *action = m_pController->GetActionByEID(m_EventID);
 
@@ -992,7 +992,7 @@ void ReplayOutput::DisplayMesh()
 {
   CHECK_REPLAY_THREAD();
 
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   ActionDescription *action = m_pController->GetActionByEID(m_EventID);
 

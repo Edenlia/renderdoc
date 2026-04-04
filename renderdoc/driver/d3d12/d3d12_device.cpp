@@ -1723,7 +1723,7 @@ ID3D12RootSignature *WrappedID3D12Device::CreateImplicitRootSig(
 
 void WrappedID3D12Device::ApplyInitialContents()
 {
-  RENDERDOC_PROFILEFUNCTION();
+  REDENDOC_PROFILEFUNCTION();
 
   initStateCurBatch = 0;
   initStateCurList = NULL;
@@ -2509,7 +2509,7 @@ HRESULT WrappedID3D12Device::Present(ID3D12GraphicsCommandList *pOverlayCommandL
   {
     uint32_t overlay = RenderDoc::Inst().GetOverlayBits();
 
-    if(overlay & eRENDERDOC_Overlay_Enabled)
+    if(overlay & eREDENDOC_Overlay_Enabled)
     {
       SwapPresentInfo &swapInfo = m_SwapChains[swapper];
       D3D12_CPU_DESCRIPTOR_HANDLE rtv = swapInfo.rtvs[swapper->GetLastPresentedBuffer()];
@@ -3421,9 +3421,9 @@ bool WrappedID3D12Device::DiscardFrameCapture(DeviceOwnedWindow devWnd)
 }
 
 uint32_t WrappedID3D12Device::SetObjectAnnotation(void *object, const char *key,
-                                                  RENDERDOC_AnnotationType valueType,
+                                                  REDENDOC_AnnotationType valueType,
                                                   uint32_t valueVectorWidth,
-                                                  const RENDERDOC_AnnotationValue *value)
+                                                  const REDENDOC_AnnotationValue *value)
 {
   ID3D12Object *d3d12Obj = (ID3D12Object *)object;
 
@@ -3436,9 +3436,9 @@ uint32_t WrappedID3D12Device::SetObjectAnnotation(void *object, const char *key,
 
   if(id != ResourceId())
   {
-    RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+    REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
-    if(valueType == eRENDERDOC_APIObject)
+    if(valueType == eREDENDOC_APIObject)
     {
       ResourceId valId = GetResID((ID3D12Object *)val.apiObject);
       RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(valId), "ResourceId isn't 64-bit!");
@@ -3453,7 +3453,7 @@ uint32_t WrappedID3D12Device::SetObjectAnnotation(void *object, const char *key,
         root = m_Annotations[id] = new SDObject("Object Annotations"_lit, "Object Annotations"_lit);
     }
 
-    if(valueType == eRENDERDOC_Empty)
+    if(valueType == eREDENDOC_Empty)
     {
       root->EraseChildByKeyPath(key);
     }
@@ -3469,9 +3469,9 @@ uint32_t WrappedID3D12Device::SetObjectAnnotation(void *object, const char *key,
 }
 
 uint32_t WrappedID3D12Device::SetCommandAnnotation(void *queueOrCommandBuffer, const char *key,
-                                                   RENDERDOC_AnnotationType valueType,
+                                                   REDENDOC_AnnotationType valueType,
                                                    uint32_t valueVectorWidth,
-                                                   const RENDERDOC_AnnotationValue *value)
+                                                   const REDENDOC_AnnotationValue *value)
 {
   ID3D12Object *d3d12Obj = (ID3D12Object *)queueOrCommandBuffer;
 
@@ -3487,9 +3487,9 @@ uint32_t WrappedID3D12Device::SetCommandAnnotation(void *queueOrCommandBuffer, c
       ser.SetActionChunk();
       SCOPED_SERIALISE_CHUNK(D3D12Chunk::SetQueueAnnotation);
 
-      RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+      REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
-      if(valueType == eRENDERDOC_APIObject)
+      if(valueType == eREDENDOC_APIObject)
       {
         ResourceId id = GetResID((ID3D12Object *)val.apiObject);
         RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(id), "ResourceId isn't 64-bit!");
@@ -3513,9 +3513,9 @@ uint32_t WrappedID3D12Device::SetCommandAnnotation(void *queueOrCommandBuffer, c
       ser.SetActionChunk();
       SCOPED_SERIALISE_CHUNK(D3D12Chunk::SetCommandAnnotation);
 
-      RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+      REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
-      if(valueType == eRENDERDOC_APIObject)
+      if(valueType == eREDENDOC_APIObject)
       {
         ResourceId id = GetResID((ID3D12Object *)val.apiObject);
         RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(id), "ResourceId isn't 64-bit!");

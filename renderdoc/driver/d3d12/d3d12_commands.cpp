@@ -1012,12 +1012,12 @@ bool WrappedID3D12CommandQueue::ProcessChunk(ReadSerialiser &ser, D3D12Chunk chu
       break;
 
     case D3D12Chunk::SetCommandAnnotation:
-      ret = m_ReplayList->Serialise_SetCommandAnnotation(ser, rdcstr(), eRENDERDOC_AnnotationMax, 0,
-                                                         RENDERDOC_AnnotationValue());
+      ret = m_ReplayList->Serialise_SetCommandAnnotation(ser, rdcstr(), eREDENDOC_AnnotationMax, 0,
+                                                         REDENDOC_AnnotationValue());
       break;
     case D3D12Chunk::SetQueueAnnotation:
-      ret = Serialise_SetQueueAnnotation(ser, rdcstr(), eRENDERDOC_AnnotationMax, 0,
-                                         RENDERDOC_AnnotationValue());
+      ret = Serialise_SetQueueAnnotation(ser, rdcstr(), eREDENDOC_AnnotationMax, 0,
+                                         REDENDOC_AnnotationValue());
       break;
 
     // in order to get a warning if we miss a case, we explicitly handle the device creation chunks
@@ -2472,7 +2472,7 @@ void D3D12CommandData::InsertActionsAndRefreshIDs(ResourceId cmd, const BakedCmd
           const PendingAnnotation &annot = cmdListInfo.annotations[curAnnot];
           if(annot.eventId == ev.eventId)
           {
-            if(annot.valueType == eRENDERDOC_Empty)
+            if(annot.valueType == eREDENDOC_Empty)
               localAnnotations->EraseChildByKeyPath(annot.key);
             else
               WriteAnnotation(localAnnotations->CreateChildByKeyPath(annot.key), annot.valueType,

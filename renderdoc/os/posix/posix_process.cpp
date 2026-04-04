@@ -770,12 +770,12 @@ void GetHookingEnvMods(rdcarray<EnvironmentModification> &modifications, const C
     libpath = binpath + "/../lib";
 
 // point to the right customiseable path
-#if defined(RENDERDOC_LIB_SUFFIX)
-    libpath += STRINGIZE(RENDERDOC_LIB_SUFFIX);
+#if defined(REDENDOC_LIB_SUFFIX)
+    libpath += STRINGIZE(REDENDOC_LIB_SUFFIX);
 #endif
 
-#if defined(RENDERDOC_LIB_SUBFOLDER)
-    libpath += "/" STRINGIZE(RENDERDOC_LIB_SUBFOLDER);
+#if defined(REDENDOC_LIB_SUBFOLDER)
+    libpath += "/" STRINGIZE(REDENDOC_LIB_SUBFOLDER);
 #endif
   }
 
@@ -792,10 +792,10 @@ void GetHookingEnvMods(rdcarray<EnvironmentModification> &modifications, const C
   rdcstr optstr = opts.EncodeAsString();
 
   modifications.push_back(EnvironmentModification(EnvMod::Append, EnvSep::Platform,
-                                                  "RENDERDOC_ORIGLIBPATH",
+                                                  "REDENDOC_ORIGLIBPATH",
                                                   Process::GetEnvVariable(LIB_PATH_ENV_VAR)));
   modifications.push_back(EnvironmentModification(EnvMod::Append, EnvSep::Platform,
-                                                  "RENDERDOC_ORIGPRELOAD",
+                                                  "REDENDOC_ORIGPRELOAD",
                                                   Process::GetEnvVariable(PRELOAD_ENV_VAR)));
   modifications.push_back(
       EnvironmentModification(EnvMod::Append, EnvSep::Platform, LIB_PATH_ENV_VAR, ownlibpath));
@@ -806,11 +806,11 @@ void GetHookingEnvMods(rdcarray<EnvironmentModification> &modifications, const C
   modifications.push_back(
       EnvironmentModification(EnvMod::Append, EnvSep::Platform, PRELOAD_ENV_VAR, libfile));
   modifications.push_back(
-      EnvironmentModification(EnvMod::Set, EnvSep::NoSep, "RENDERDOC_CAPFILE", capturefile));
+      EnvironmentModification(EnvMod::Set, EnvSep::NoSep, "REDENDOC_CAPFILE", capturefile));
   modifications.push_back(
-      EnvironmentModification(EnvMod::Set, EnvSep::NoSep, "RENDERDOC_CAPOPTS", optstr));
+      EnvironmentModification(EnvMod::Set, EnvSep::NoSep, "REDENDOC_CAPOPTS", optstr));
   modifications.push_back(EnvironmentModification(EnvMod::Set, EnvSep::NoSep,
-                                                  "RENDERDOC_DEBUG_LOG_FILE", RDCGETLOGFILE()));
+                                                  "REDENDOC_DEBUG_LOG_FILE", RDCGETLOGFILE()));
 }
 
 void PreForkConfigureHooks()
@@ -830,7 +830,7 @@ void GetUnhookedEnvp(char *const *envp, rdcstr &envpStr, rdcarray<char *> &modif
   // this is a nasty hack. We set this env var when we inject into a child, but because we don't
   // know when vulkan may be initialised we need to leave it on indefinitely. If we're not
   // injecting into children we need to unset this variable so it doesn't get inherited.
-  envmap.erase(RENDERDOC_VULKAN_LAYER_VAR);
+  envmap.erase(REDENDOC_VULKAN_LAYER_VAR);
 
   envpStr.clear();
 
@@ -867,9 +867,9 @@ void GetHookedEnvp(char *const *envp, rdcstr &envpStr, rdcarray<char *> &modifie
   {
     // update the values for original values we're storing, since they were gotten by querying the
     // *current* environment not envp here.
-    if(mod.name == "RENDERDOC_ORIGLIBPATH")
+    if(mod.name == "REDENDOC_ORIGLIBPATH")
       mod.value = envmap[LIB_PATH_ENV_VAR];
-    else if(mod.name == "RENDERDOC_ORIGPRELOAD")
+    else if(mod.name == "REDENDOC_ORIGPRELOAD")
       mod.value = envmap[PRELOAD_ENV_VAR];
 
     // modify the map in-place
@@ -900,10 +900,10 @@ void GetHookedEnvp(char *const *envp, rdcstr &envpStr, rdcarray<char *> &modifie
 
 void ResetHookingEnvVars()
 {
-  direct_setenv(LIB_PATH_ENV_VAR, Process::GetEnvVariable("RENDERDOC_ORIGLIBPATH").c_str(), true);
-  direct_setenv(PRELOAD_ENV_VAR, Process::GetEnvVariable("RENDERDOC_ORIGPRELOAD").c_str(), true);
-  direct_setenv("RENDERDOC_ORIGLIBPATH", "", true);
-  direct_setenv("RENDERDOC_ORIGPRELOAD", "", true);
+  direct_setenv(LIB_PATH_ENV_VAR, Process::GetEnvVariable("REDENDOC_ORIGLIBPATH").c_str(), true);
+  direct_setenv(PRELOAD_ENV_VAR, Process::GetEnvVariable("REDENDOC_ORIGPRELOAD").c_str(), true);
+  direct_setenv("REDENDOC_ORIGLIBPATH", "", true);
+  direct_setenv("REDENDOC_ORIGPRELOAD", "", true);
 }
 
 rdcpair<RDResult, uint32_t> Process::LaunchAndInjectIntoProcess(

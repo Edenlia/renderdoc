@@ -191,9 +191,9 @@ int WrappedID3D11DeviceContext::PopMarker()
 
 template <typename SerialiserType>
 bool WrappedID3D11DeviceContext::Serialise_SetCommandAnnotation(SerialiserType &ser, rdcstr key,
-                                                                RENDERDOC_AnnotationType valueType,
+                                                                REDENDOC_AnnotationType valueType,
                                                                 uint32_t valueVectorWidth,
-                                                                RENDERDOC_AnnotationValue value)
+                                                                REDENDOC_AnnotationValue value)
 {
   SERIALISE_ELEMENT(key);
   SERIALISE_ELEMENT(valueType);
@@ -212,7 +212,7 @@ bool WrappedID3D11DeviceContext::Serialise_SetCommandAnnotation(SerialiserType &
 
       SDObject *root = m_RootAnnotation;
 
-      if(valueType == eRENDERDOC_Empty)
+      if(valueType == eREDENDOC_Empty)
       {
         root->EraseChildByKeyPath(key);
       }
@@ -229,9 +229,9 @@ bool WrappedID3D11DeviceContext::Serialise_SetCommandAnnotation(SerialiserType &
 }
 
 uint32_t WrappedID3D11DeviceContext::SetCommandAnnotation(const char *key,
-                                                          RENDERDOC_AnnotationType valueType,
+                                                          REDENDOC_AnnotationType valueType,
                                                           uint32_t valueVectorWidth,
-                                                          const RENDERDOC_AnnotationValue *value)
+                                                          const REDENDOC_AnnotationValue *value)
 {
   SERIALISE_TIME_CALL();
 
@@ -242,9 +242,9 @@ uint32_t WrappedID3D11DeviceContext::SetCommandAnnotation(const char *key,
     SCOPED_SERIALISE_CHUNK(D3D11Chunk::SetCommandAnnotation);
     SERIALISE_ELEMENT(m_ResourceID).Named("Context"_lit).TypedAs("ID3D11DeviceContext *"_lit);
 
-    RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+    REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
-    if(valueType == eRENDERDOC_APIObject && val.apiObject)
+    if(valueType == eREDENDOC_APIObject && val.apiObject)
     {
       ResourceId id = GetIDForDeviceChild((ID3D11DeviceChild *)val.apiObject);
       RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(id), "ResourceId isn't 64-bit!");
@@ -260,18 +260,18 @@ uint32_t WrappedID3D11DeviceContext::SetCommandAnnotation(const char *key,
 }
 
 uint32_t WrappedID3D11DeviceContext::SetObjectAnnotation(void *object, const char *key,
-                                                         RENDERDOC_AnnotationType valueType,
+                                                         REDENDOC_AnnotationType valueType,
                                                          uint32_t valueVectorWidth,
-                                                         const RENDERDOC_AnnotationValue *value)
+                                                         const REDENDOC_AnnotationValue *value)
 {
   ResourceId id = GetIDForDeviceChild((ID3D11DeviceChild *)object);
 
   if(id != ResourceId())
   {
-    RENDERDOC_AnnotationValue val = value ? *value : RENDERDOC_AnnotationValue();
+    REDENDOC_AnnotationValue val = value ? *value : REDENDOC_AnnotationValue();
 
     // Convert API object references to ResourceId
-    if(valueType == eRENDERDOC_APIObject && val.apiObject)
+    if(valueType == eREDENDOC_APIObject && val.apiObject)
     {
       ResourceId valId = GetIDForDeviceChild((ID3D11DeviceChild *)val.apiObject);
       RDCCOMPILE_ASSERT(sizeof(val.uint64) == sizeof(valId), "ResourceId isn't 64-bit!");
@@ -286,7 +286,7 @@ uint32_t WrappedID3D11DeviceContext::SetObjectAnnotation(void *object, const cha
         root = m_Annotations[id] = new SDObject("Object Annotations"_lit, "Object Annotations"_lit);
     }
 
-    if(valueType == eRENDERDOC_Empty)
+    if(valueType == eREDENDOC_Empty)
     {
       root->EraseChildByKeyPath(key);
     }

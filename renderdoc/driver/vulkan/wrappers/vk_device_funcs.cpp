@@ -50,9 +50,9 @@ static VkApplicationInfo renderdocAppInfo = {
     VK_STRUCTURE_TYPE_APPLICATION_INFO,
     NULL,
     "RenderDoc Capturing App",
-    VK_MAKE_VERSION(RENDERDOC_VERSION_MAJOR, RENDERDOC_VERSION_MINOR, 0),
+    VK_MAKE_VERSION(REDENDOC_VERSION_MAJOR, REDENDOC_VERSION_MINOR, 0),
     "RenderDoc",
-    VK_MAKE_VERSION(RENDERDOC_VERSION_MAJOR, RENDERDOC_VERSION_MINOR, 0),
+    VK_MAKE_VERSION(REDENDOC_VERSION_MAJOR, REDENDOC_VERSION_MINOR, 0),
     VK_API_VERSION_1_0,
 };
 
@@ -117,7 +117,7 @@ static void StripUnwantedLayers(rdcarray<rdcstr> &Layers)
 {
   Layers.removeIf([](const rdcstr &layer) {
     // don't try and create our own layer on replay!
-    if(layer == RENDERDOC_VULKAN_LAYER_NAME)
+    if(layer == REDENDOC_VULKAN_LAYER_NAME)
     {
       return true;
     }
@@ -615,7 +615,7 @@ VkResult WrappedVulkan::vkCreateInstance(const VkInstanceCreateInfo *pCreateInfo
 #if DISABLED(RDOC_ANDROID)
   for(uint32_t i = 0; i < modifiedCreateInfo.enabledLayerCount; i++)
   {
-    if(rdcstr(modifiedCreateInfo.ppEnabledLayerNames[i]) == RENDERDOC_VULKAN_LAYER_NAME)
+    if(rdcstr(modifiedCreateInfo.ppEnabledLayerNames[i]) == REDENDOC_VULKAN_LAYER_NAME)
     {
       // see if any debug report callbacks were passed in the pNext chain
       VkDebugReportCallbackCreateInfoEXT *report =
@@ -4565,7 +4565,7 @@ bool WrappedVulkan::Serialise_vkCreateDevice(SerialiserType &ser, VkPhysicalDevi
         VkDebugUtilsObjectTagInfoEXT tagInfo = {VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT};
         tagInfo.objectType = VK_OBJECT_TYPE_INSTANCE;
         tagInfo.objectHandle = uint64_t(Unwrap(m_Instance));
-        tagInfo.tagName = RENDERDOC_DescriptorsReservation_UUID;
+        tagInfo.tagName = REDENDOC_DescriptorsReservation_UUID;
         tagInfo.tagSize = sizeof(bool);
         bool yes = true;
         tagInfo.pTag = &yes;

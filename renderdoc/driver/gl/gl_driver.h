@@ -720,14 +720,14 @@ public:
 
   template <typename SerialiserType>
   bool Serialise_SetCommandAnnotation(SerialiserType &ser, rdcstr key,
-                                      RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                      RENDERDOC_AnnotationValue value);
+                                      REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                      REDENDOC_AnnotationValue value);
 
-  uint32_t SetObjectAnnotation(void *object, const char *key, RENDERDOC_AnnotationType valueType,
-                               uint32_t valueVectorWidth, const RENDERDOC_AnnotationValue *value);
+  uint32_t SetObjectAnnotation(void *object, const char *key, REDENDOC_AnnotationType valueType,
+                               uint32_t valueVectorWidth, const REDENDOC_AnnotationValue *value);
   uint32_t SetCommandAnnotation(void *queueOrCommandBuffer, const char *key,
-                                RENDERDOC_AnnotationType valueType, uint32_t valueVectorWidth,
-                                const RENDERDOC_AnnotationValue *value);
+                                REDENDOC_AnnotationType valueType, uint32_t valueVectorWidth,
+                                const REDENDOC_AnnotationValue *value);
 
   // map with key being mip level, value being stored data
   typedef std::map<int, bytebuf> CompressedDataStore;
