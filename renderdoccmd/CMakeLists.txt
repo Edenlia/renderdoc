@@ -88,6 +88,8 @@ else()
     
     if(INTERNAL_SELF_CAPTURE)
         set_target_properties(renderdoccmd PROPERTIES OUTPUT_NAME "rdocselfcmd")
+    else()
+        set_target_properties(renderdoccmd PROPERTIES OUTPUT_NAME "redendoccmd")
     endif()
 endif()
 
