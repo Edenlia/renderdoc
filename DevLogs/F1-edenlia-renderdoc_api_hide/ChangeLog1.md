@@ -244,6 +244,26 @@ access("~/.config/renderdoc/...", F_OK);
 | **Metal** | `metal_device.h` |
 | **IHV** | `ags_wrapper.cpp`（AMD AGS 相关） |
 
+> **补充说明（ChangeLog3 追溯）**：上述 D3D11/D3D12/GL 驱动文件中，除了通用的 `RENDERDOC_` 前缀宏/类型/枚举值引用外，还包含大量 **shader 入口点字符串** 的变更。这些字符串作为 `D3DCompile` / `GetShaderBlob` / `MakeVShader` / `MakePShader` / `MakeCShader` / `MakeGShader` / `glGetUniformLocation` 等 API 的参数，直接决定了运行时 shader 编译能否找到正确的入口点函数。具体变更如下：
+>
+> **D3D11 shader 入口点字符串变更：**
+> - `d3d11_rendertext.cpp`（4 处）：`MakeVShader(hlsl, "RENDERDOC_TextVS", ...)` → `"REDENDOC_TextVS"`、`MakeVShader(hlsl, "RENDERDOC_Text9VS", ...)` → `"REDENDOC_Text9VS"`、`MakePShader(hlsl, "RENDERDOC_TextPS", ...)` → `"REDENDOC_TextPS"`（2 处，分别对应 FL10+ 和 FL9 模式）
+> - `d3d11_debug.cpp`（约 30 处）：包括 `"RENDERDOC_FullscreenVS"` → `"REDENDOC_FullscreenVS"`、`"RENDERDOC_FixedColPS"` → `"REDENDOC_FixedColPS"`、`"RENDERDOC_CheckerboardPS"` → `"REDENDOC_CheckerboardPS"`、`"RENDERDOC_DiscardFloatPS"` → `"REDENDOC_DiscardFloatPS"`、`"RENDERDOC_DiscardIntPS"` → `"REDENDOC_DiscardIntPS"`、`"RENDERDOC_TexDisplayVS/PS"` → `"REDENDOC_TexDisplayVS/PS"`、`"RENDERDOC_TexRemapFloat/UInt/SInt"` → `"REDENDOC_TexRemapFloat/UInt/SInt"`、`"RENDERDOC_QuadOverdrawPS"` → `"REDENDOC_QuadOverdrawPS"`、`"RENDERDOC_QOResolvePS"` → `"REDENDOC_QOResolvePS"`、`"RENDERDOC_MeshVS"` → `"REDENDOC_MeshVS"`、`"RENDERDOC_TriangleSizeGS/PS"` → `"REDENDOC_TriangleSizeGS/PS"`、`"RENDERDOC_DepthCopyPS/ArrayPS/MSPS/MSArrayPS"` → `"REDENDOC_DepthCopyPS/ArrayPS/MSPS/MSArrayPS"`、`"RENDERDOC_CopyMSToArray"` 等 multisample 系列 → `"REDENDOC_*"`、`"RENDERDOC_PixelHistoryUnused/CopyPixel"` → `"REDENDOC_*"`、`"RENDERDOC_TileMinMaxCS/ResultMinMaxCS/HistogramCS"` → `"REDENDOC_*"` 等
+> - `d3d11_rendertexture.cpp`（9 处）：自定义 shader cbuffer 变量名匹配字符串 `"RENDERDOC_TexDim"` → `"REDENDOC_TexDim"`、`"RENDERDOC_YUVDownsampleRate"` → `"REDENDOC_YUVDownsampleRate"`、`"RENDERDOC_YUVAChannels"` → `"REDENDOC_YUVAChannels"`、`"RENDERDOC_SelectedMip"` → `"REDENDOC_SelectedMip"`、`"RENDERDOC_SelectedSliceFace"` → `"REDENDOC_SelectedSliceFace"`、`"RENDERDOC_SelectedSample"` → `"REDENDOC_SelectedSample"`、`"RENDERDOC_TextureType"` → `"REDENDOC_TextureType"`、`"RENDERDOC_SelectedRangeMin"` → `"REDENDOC_SelectedRangeMin"`、`"RENDERDOC_SelectedRangeMax"` → `"REDENDOC_SelectedRangeMax"`
+>
+> **D3D12 shader 入口点字符串变更：**
+> - `d3d12_rendertext.cpp`（2 处）：`GetShaderBlob(hlsl, "RENDERDOC_TextVS", ...)` → `"REDENDOC_TextVS"`、`GetShaderBlob(hlsl, "RENDERDOC_TextPS", ...)` → `"REDENDOC_TextPS"`
+> - `d3d12_debug.cpp`（约 32 处）：与 D3D11 类似的全部 shader 入口点字符串，通过 `GetShaderBlob` API 调用
+> - `d3d12_overlay.cpp`（2 处）：`GetShaderBlob(hlsl, "RENDERDOC_QuadOverdrawPS", ...)` → `"REDENDOC_QuadOverdrawPS"`
+> - `d3d12_manager.cpp`（13 处）：raytracing 相关 shader 入口点 `"RENDERDOC_PatchShaderTableCS"` → `"REDENDOC_PatchShaderTableCS"`、`"RENDERDOC_CopyShaderTableCS"` → `"REDENDOC_CopyShaderTableCS"`、`"RENDERDOC_PrepareRayIndirectExecuteCS"` → `"REDENDOC_PrepareRayIndirectExecuteCS"`、`"RENDERDOC_PrepareTLASCopyIndirectExecuteCS"` → `"REDENDOC_PrepareTLASCopyIndirectExecuteCS"`、`"RENDERDOC_CopyBLASInstanceCS"` → `"REDENDOC_CopyBLASInstanceCS"`、`"RENDERDOC_PatchAccStructAddressCS"` → `"REDENDOC_PatchAccStructAddressCS"`，以及对应的 pipeline `SetName` 调用
+> - `d3d12_rendertexture.cpp`（9 处）：与 D3D11 相同的自定义 shader cbuffer 变量名匹配字符串
+>
+> **GL shader uniform 变量名变更：**
+> - `gl_overlay.cpp`（2 处）：`glGetUniformLocation(prog, "RENDERDOC_Fixed_Color")` → `"REDENDOC_Fixed_Color"`
+> - `gl_rendertexture.cpp`（7 处）：`glGetUniformLocation(prog, "RENDERDOC_TexDim")` → `"REDENDOC_TexDim"` 等自定义 shader uniform 变量名
+>
+> **注意**：上述 C++ 侧的字符串变更已在 ChangeLog1 中完成，但对应的 **shader 源码文件（HLSL/GLSL）中的函数定义和变量声明** 在 ChangeLog1 中遗漏，已在 ChangeLog3 中补充修复。
+
 #### 7.5 序列化 / 回放模块
 
 | 文件 | 说明 |
