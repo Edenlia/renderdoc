@@ -301,8 +301,7 @@ private:
       // inherit logfile and capture options
       rdcpair<RDResult, uint32_t> res = Process::InjectIntoProcess(
           lpProcessInformation->dwProcessId, {}, RenderDoc::Inst().GetCaptureFileTemplate(),
-          RenderDoc::Inst().GetCaptureOptions(), false,
-          Process::InjectionMethod::SetThreadContext, (void *)lpProcessInformation->hThread);
+          RenderDoc::Inst().GetCaptureOptions(), false);
 
       if(res.first == ResultCode::Succeeded)
         RenderDoc::Inst().AddChildProcess((uint32_t)lpProcessInformation->dwProcessId, res.second);
