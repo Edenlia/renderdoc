@@ -337,7 +337,11 @@ private:
     {
       rdcstr app = strlower(StringFormat::Wide2UTF8(lpApplicationName));
 
-      if(app.contains("redendoccmd.exe") || app.contains("qredendoc.exe"))
+      if(app.contains("redendoccmd.exe")
+        || app.contains("qredendoc.exe")
+        || app.contains("steamwebhelper.exe")
+        || app.contains("GameOverlayUI.exe")
+        || app.contains("UnityCrashHandler64.exe"))
       {
         inject = false;
       }
@@ -346,7 +350,11 @@ private:
     {
       rdcstr cmd = strlower(StringFormat::Wide2UTF8(lpCommandLine));
 
-      if(cmd.contains("redendoccmd.exe") || cmd.contains("qredendoc.exe"))
+      if(cmd.contains("redendoccmd.exe")
+        || cmd.contains("qredendoc.exe")
+        || cmd.contains("steamwebhelper.exe")
+        || cmd.contains("GameOverlayUI.exe")
+        || cmd.contains("UnityCrashHandler64.exe"))
       {
         inject = false;
       }
