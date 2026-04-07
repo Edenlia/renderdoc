@@ -8,12 +8,12 @@
     "implementation_version": "@REDENDOC_VERSION_MINOR@",
     "description": "Debugging capture layer for RenderDoc",
     "functions": {
-      "vkGetInstanceProcAddr": "VK_LAYER_RENDERDOC_CaptureGetInstanceProcAddr",
-      "vkGetDeviceProcAddr": "VK_LAYER_RENDERDOC_CaptureGetDeviceProcAddr",
-      "vkNegotiateLoaderLayerInterfaceVersion": "VK_LAYER_RENDERDOC_CaptureNegotiateLoaderLayerInterfaceVersion"
+      "vkGetInstanceProcAddr": "VK_LAYER_REDENDOC_CaptureGetInstanceProcAddr",
+      "vkGetDeviceProcAddr": "VK_LAYER_REDENDOC_CaptureGetDeviceProcAddr",
+      "vkNegotiateLoaderLayerInterfaceVersion": "VK_LAYER_REDENDOC_CaptureNegotiateLoaderLayerInterfaceVersion"
     },
     "pre_instance_functions": {
-      "vkEnumerateInstanceExtensionProperties": "VK_LAYER_RENDERDOC_CaptureEnumerateInstanceExtensionProperties"
+      "vkEnumerateInstanceExtensionProperties": "VK_LAYER_REDENDOC_CaptureEnumerateInstanceExtensionProperties"
     },
     "instance_extensions": [
       {
@@ -42,7 +42,7 @@
       "@VULKAN_ENABLE_VAR@": "1"
     },
     "disable_environment": {
-      "DISABLE_VULKAN_RENDERDOC_CAPTURE_@REDENDOC_VERSION_MAJOR@_@REDENDOC_VERSION_MINOR@": "1"
+      "DISABLE_VULKAN_REDENDOC_CAPTURE_@REDENDOC_VERSION_MAJOR@_@REDENDOC_VERSION_MINOR@": "1"
     }
   }
 }
