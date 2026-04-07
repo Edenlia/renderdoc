@@ -2450,6 +2450,20 @@ void MainWindow::on_action_Close_Capture_triggered()
   (void)PromptCloseCapture();
 }
 
+void MainWindow::on_action_Open_Log_Folder_triggered()
+{
+  QString logPath = QString::fromUtf8(REDENDOC_GetLogFile());
+  if(logPath.isEmpty())
+    return;
+
+  QFileInfo fileInfo(logPath);
+  QString dirPath = fileInfo.absolutePath();
+  if(dirPath.isEmpty() || !QDir(dirPath).exists())
+    return;
+
+  QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
+}
+
 void MainWindow::on_action_Save_Capture_Inplace_triggered()
 {
   bool saved = false;

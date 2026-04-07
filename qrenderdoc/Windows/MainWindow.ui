@@ -109,6 +109,8 @@
     <addaction name="action_Save_Capture_As"/>
     <addaction name="action_Close_Capture"/>
     <addaction name="separator"/>
+    <addaction name="action_Open_Log_Folder"/>
+    <addaction name="separator"/>
     <addaction name="extension_dummy_File"/>
     <addaction name="separator"/>
     <addaction name="menu_Import_From"/>
@@ -519,6 +521,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="action_Open_Log_Folder">
+   <property name="text">
+    <string>Open &amp;Log Folder</string>
    </property>
   </action>
  </widget>
