@@ -915,7 +915,7 @@ rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
 
       commandLine = (wchar_t *)cmdWithEnv.c_str();
     }
-
+    // Edenlia COMMENT: Create renderdoccmd.exe process
     BOOL retValue = CreateProcessW(NULL, commandLine, &pSec, &tSec, false,
                                    CREATE_NEW_CONSOLE | CREATE_SUSPENDED, NULL, NULL, &si, &pi);
 
@@ -969,7 +969,7 @@ rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
 
     return {ResultCode::Succeeded, (uint32_t)exitCode};
   }
-
+  // Edenlia COMMENT: Real Inject renderdoc.dll to target process
   InjectDLL(hProcess, renderdocPath);
 
   const char *rdoc_dll = STRINGIZE(RDOC_BASE_NAME);
@@ -1154,8 +1154,10 @@ rdcpair<RDResult, uint32_t> Process::LaunchAndInjectIntoProcess(
     return {result, 0};
   }
 
+  // Edenlia COMMENT: 1. Create Process with Suspended
   PROCESS_INFORMATION pi = RunProcess(app, workingDir, cmdLine, env, false, NULL, NULL);
 
+  // Edenlia COMMENT: Current State - kernel mode initialize finished, user mode LdrInitializeThunk not start yet
   if(pi.dwProcessId == 0)
   {
     RDResult result;
