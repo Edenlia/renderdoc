@@ -1027,6 +1027,8 @@ static void EGLHooked(void *handle, const char *libName)
 
 bool ShouldHookEGL()
 {
+  // Some Process will set this by themselves
+  // If hook not available, check if RENDERDOC_HOOK_EGL is set
   rdcstr toggle = Process::GetEnvVariable("REDENDOC_HOOK_EGL");
 
   // if the var is set to 0, then don't hook EGL
