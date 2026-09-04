@@ -7,7 +7,7 @@
 <PropertyGroup>
 
 	<!-- 强制使用本地已安装的 Windows 10 SDK 版本 -->
-	<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+	<WindowsTargetPlatformVersion Condition="'$(WindowsTargetPlatformVersion)' == ''">10.0</WindowsTargetPlatformVersion>
 </PropertyGroup>
 
 </Project>
